@@ -1,4 +1,12 @@
-# Paperclip
+# Paperclip / TraceGrid
+
+## TraceGrid Direction
+
+This fork is being refactored into **TraceGrid**.
+
+TraceGrid is a source-specialized collection and retrieval system. Axiom Forge sends collection directives to TraceGrid; TraceGrid decomposes them into source-specific collection jobs, assigns isolated collection agents, normalizes and deduplicates the resulting evidence, and returns Evidence Packages to Axiom Forge.
+
+TraceGrid does **not** synthesize final reports, make analytical judgments, draw conclusions, recommend actions, or communicate directly with human end users. Axiom Forge is the only system allowed to interpret or synthesize evidence returned by TraceGrid.
 
 **Paperclip is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for Paperclip-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
 

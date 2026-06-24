@@ -1,4 +1,28 @@
-# Paperclip V1 Implementation Spec
+# Paperclip / TraceGrid Implementation Spec
+
+## TraceGrid Refactor Addendum
+
+This fork is being refactored into **TraceGrid**, a source-specialized evidence collection and retrieval system. During the transition, legacy Paperclip table names and REST routes may remain as compatibility internals; externally visible behavior should move toward TraceGrid terminology and contracts.
+
+TraceGrid hard rules:
+
+- No agent-to-agent communication.
+- No final analysis.
+- No conclusions, recommendations, or analytical judgments.
+- No human-facing report generation.
+- Axiom Forge is the only system allowed to interpret or synthesize.
+- TraceGrid only collects, normalizes, deduplicates, retrieves, and packages evidence.
+
+TraceGrid terminology:
+
+- Company/team → Collection Network
+- Agent → Collection Agent
+- Manager/CEO → TraceGrid Coordinator
+- Task/Issue → Collection Job
+- Goal → Collection Directive
+- Report/work product → Evidence Package
+
+Every Evidence Package uses the shared Evidence Schema with `source_type`, `source_name`, `url`, `title`, `author`, `published_at`, `retrieved_at`, `raw_text`, `media_urls`, `metadata`, `collection_agent`, `collection_job_id`, `confidence`, and `limitations`.
 
 Status: Implementation contract for first release (V1)
 Date: 2026-04-28

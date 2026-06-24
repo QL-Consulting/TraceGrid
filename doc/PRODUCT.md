@@ -1,4 +1,18 @@
-# Paperclip — Product Definition
+# Paperclip / TraceGrid — Product Definition
+
+## TraceGrid Product Boundary
+
+This fork is transitioning from the general Paperclip autonomous-company control plane into **TraceGrid**.
+
+TraceGrid's sole product function is source-specialized collection and retrieval:
+
+1. Axiom Forge sends collection directives.
+2. TraceGrid Coordinator decomposes directives into source-specific collection jobs.
+3. Isolated Collection Agents retrieve evidence from only their assigned source type.
+4. TraceGrid normalizes, deduplicates, and packages evidence.
+5. Evidence Packages return to Axiom Forge.
+
+TraceGrid is not Strat Sight and not Axiom Forge. It does not produce human-facing reports, final analysis, conclusions, recommendations, or judgments. The inherited Paperclip terms remain in some internal storage and compatibility routes during the refactor, but product-facing terminology should move toward Collection Networks, Collection Agents, Collection Jobs, Collection Directives, and Evidence Packages.
 
 ## What It Is
 

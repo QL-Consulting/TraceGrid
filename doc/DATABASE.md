@@ -1,5 +1,22 @@
 # Database
 
+## TraceGrid Evidence Persistence Addendum
+
+This fork is adding TraceGrid evidence-collection persistence while keeping legacy Paperclip table names in place during the transition.
+
+Initial TraceGrid additions:
+
+- `agents.collection_source_type` — optional source specialization for Collection Agents.
+- `issues.collection_source_type` — optional source specialization for Collection Jobs.
+- `evidence_packages` — first-class normalized evidence records tied to a collection network (`company_id`), collection job (`collection_job_id`), and collection agent (`collection_agent_id`).
+
+`evidence_packages` stores the TraceGrid Evidence Schema fields plus server-side deduplication metadata:
+
+- schema fields: `source_type`, `source_name`, `url`, `title`, `author`, `published_at`, `retrieved_at`, `raw_text`, `media_urls`, `metadata`, `collection_agent`, `collection_job_id`, `confidence`, `limitations`
+- server fields: `content_hash`, `dedupe_key`, `duplicate_of_id`, timestamps
+
+Legacy names such as `companies`, `agents`, `issues`, and `goals` remain the physical schema names for now. Product-facing API/UI language should treat these as Collection Networks, Collection Agents, Collection Jobs, and Collection Directives.
+
 Paperclip uses PostgreSQL via [Drizzle ORM](https://orm.drizzle.team/). There are three ways to run the database, from simplest to most production-ready.
 
 ## 1. Embedded PostgreSQL — zero config

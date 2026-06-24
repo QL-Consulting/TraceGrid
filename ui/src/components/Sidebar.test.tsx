@@ -172,26 +172,26 @@ describe("Sidebar", () => {
     expect(workSection?.textContent).toContain("Plugin launcher outlet");
     const workSectionContainer = workSection?.parentElement?.parentElement;
     expect(workSectionContainer?.textContent).toContain("Work");
-    expect(workSectionContainer?.textContent).toContain("Tasks");
-    expect(workSectionContainer?.textContent).toContain("Goals");
+    expect(workSectionContainer?.textContent).toContain("Collection Jobs");
+    expect(workSectionContainer?.textContent).toContain("Collection Directives");
 
     flushSync(() => {
       root.unmount();
     });
   });
 
-  it("streamlined (flag ON): keeps Task wording, top-level Projects link, no per-project collapsible", async () => {
+  it("streamlined (flag ON): keeps Collection Job wording, top-level Projects link, no per-project collapsible", async () => {
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({
       enableIsolatedWorkspaces: false,
       enableStreamlinedLeftNavigation: true,
     });
     const root = await renderSidebar();
 
-    expect(container.textContent).toContain("New Task");
+    expect(container.textContent).toContain("New Collection Job");
     expect(container.textContent).not.toContain("New Issue");
 
     const navLabels = [...container.querySelectorAll("nav a")].map((a) => a.textContent?.trim());
-    expect(navLabels).toContain("Tasks");
+    expect(navLabels).toContain("Collection Jobs");
     expect(navLabels).not.toContain("Issues");
 
     const projectsLink = [...container.querySelectorAll("nav a")].find((a) => a.textContent?.trim() === "Projects");
@@ -223,18 +223,18 @@ describe("Sidebar", () => {
     });
   });
 
-  it("classic (flag OFF): New Task button, Tasks label, per-project collapsible, no top-level Projects link", async () => {
+  it("classic (flag OFF): New Collection Job button, Collection Jobs label, per-project collapsible, no top-level Projects link", async () => {
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({
       enableIsolatedWorkspaces: false,
       enableStreamlinedLeftNavigation: false,
     });
     const root = await renderSidebar();
 
-    expect(container.textContent).toContain("New Task");
+    expect(container.textContent).toContain("New Collection Job");
     expect(container.textContent).not.toContain("New Issue");
 
     const navLabels = [...container.querySelectorAll("nav a")].map((a) => a.textContent?.trim());
-    expect(navLabels).toContain("Tasks");
+    expect(navLabels).toContain("Collection Jobs");
     expect(navLabels).not.toContain("Issues");
     // No top-level Projects nav link in classic mode (D5 option A).
     expect(navLabels).not.toContain("Projects");
@@ -283,25 +283,25 @@ describe("Sidebar", () => {
     });
   });
 
-  it("shows Skills directly below Artifacts in Work", async () => {
+  it("shows Skills directly below Evidence Packages in Work", async () => {
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({ enableIsolatedWorkspaces: false });
     const root = await renderSidebar();
 
     const artifactsLink = [...container.querySelectorAll("a")].find(
-      (anchor) => anchor.textContent === "Artifacts",
+      (anchor) => anchor.textContent === "Evidence Packages",
     );
     expect(artifactsLink?.getAttribute("href")).toBe("/artifacts");
 
     const navText = container.querySelector("nav")?.textContent ?? "";
-    expect(navText).toContain("Goals");
-    expect(navText).toContain("Artifacts");
+    expect(navText).toContain("Collection Directives");
+    expect(navText).toContain("Evidence Packages");
     expect(navText).toContain("Skills");
-    expect(navText.indexOf("Goals")).toBeLessThan(navText.indexOf("Artifacts"));
-    expect(navText.indexOf("Artifacts")).toBeLessThan(navText.indexOf("Skills"));
+    expect(navText.indexOf("Collection Directives")).toBeLessThan(navText.indexOf("Evidence Packages"));
+    expect(navText.indexOf("Evidence Packages")).toBeLessThan(navText.indexOf("Skills"));
 
     const sections = [...container.querySelectorAll("nav > div")];
     const workSection = sections.find((section) => section.textContent?.startsWith("Work"));
-    const companySection = sections.find((section) => section.textContent?.startsWith("Company"));
+    const companySection = sections.find((section) => section.textContent?.startsWith("Collection Network"));
     expect(workSection?.textContent).toContain("Skills");
     expect(companySection?.textContent).not.toContain("Skills");
 
@@ -310,17 +310,14 @@ describe("Sidebar", () => {
     });
   });
 
-  it("shows the Conference Room nav item when conference room chat is enabled (PAP-137)", async () => {
+  it("hides the legacy Conference Room nav item even when the stored flag is enabled", async () => {
     mockInstanceSettingsApi.getExperimental.mockResolvedValue({
       enableIsolatedWorkspaces: false,
       enableConferenceRoomChat: true,
     });
     const root = await renderSidebar();
 
-    const link = [...container.querySelectorAll("nav a")].find(
-      (anchor) => anchor.textContent?.trim() === "Conference Room",
-    );
-    expect(link?.getAttribute("href")).toBe("/board-chat");
+    expect(container.textContent).not.toContain("Conference Room");
 
     flushSync(() => {
       root.unmount();

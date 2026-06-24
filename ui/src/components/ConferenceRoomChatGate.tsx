@@ -1,18 +1,12 @@
-import { Navigate, Outlet } from "@/lib/router";
-import { useConferenceRoomChatEnabled } from "@/hooks/useConferenceRoomChatEnabled";
+import { Navigate } from "@/lib/router";
 
 /**
- * Layout route guard for Conference Room Chat surfaces (PAP-136 / PAP-137).
+ * Layout route guard for legacy Conference Room Chat surfaces.
  *
- * The gated routes stay registered (matching the PAP-89 streamlined-nav
- * precedent: gating is presentation-only, no 404 flash); when the
- * experimental flag is off the element redirects to the company home
- * instead of rendering. While the flag is still loading nothing renders so
- * an enabled user is not bounced away by a premature redirect.
+ * TraceGrid does not provide a human-facing report/chat surface. Keep the
+ * legacy routes registered for compatibility, but always redirect them to the
+ * collection network dashboard.
  */
 export function ConferenceRoomChatGate() {
-  const { enabled, loaded } = useConferenceRoomChatEnabled();
-  if (!loaded) return null;
-  if (!enabled) return <Navigate to="/dashboard" replace />;
-  return <Outlet />;
+  return <Navigate to="/dashboard" replace />;
 }

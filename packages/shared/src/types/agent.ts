@@ -89,7 +89,7 @@ export interface Agent {
   status: AgentStatus;
   reportsTo: string | null;
   capabilities: string | null;
-  collectionSourceType: TraceGridSourceType | null;
+  collectionSourceType?: TraceGridSourceType | null;
   adapterType: AgentAdapterType;
   adapterConfig: Record<string, unknown>;
   runtimeConfig: AgentRuntimeConfig;

@@ -545,7 +545,7 @@ export interface Issue {
   priority: IssuePriority;
   assigneeAgentId: string | null;
   assigneeUserId: string | null;
-  collectionSourceType: TraceGridSourceType | null;
+  collectionSourceType?: TraceGridSourceType | null;
   checkoutRunId: string | null;
   executionRunId: string | null;
   executionAgentNameKey: string | null;

@@ -242,15 +242,15 @@ function OnboardingRoutePage() {
     : null;
 
   const title = matchedCompany
-    ? `Add another agent to ${matchedCompany.name}`
+    ? `Add another collection agent to ${matchedCompany.name}`
     : companies.length > 0
-      ? "Create another company"
-      : "Create your first company";
+      ? "Create another collection network"
+      : "Create your first collection network";
   const description = matchedCompany
-    ? "Run onboarding again to add an agent and a starter task for this company."
+    ? "Run onboarding again to add a collection agent and starter collection job for this network."
     : companies.length > 0
-      ? "Run onboarding again to create another company and seed its first agent."
-      : "Get started by creating a company and your first agent.";
+      ? "Run onboarding again to create another collection network and seed its first collection agent."
+      : "Get started by creating a collection network and your first collection agent.";
 
   return (
     <div className="mx-auto max-w-xl py-10">
@@ -265,7 +265,7 @@ function OnboardingRoutePage() {
                 : openOnboarding()
             }
           >
-            {matchedCompany ? "Add Agent" : "Start Onboarding"}
+            {matchedCompany ? "Add Collection Agent" : "Start Onboarding"}
           </Button>
         </div>
       </div>
@@ -334,14 +334,14 @@ function NoCompaniesStartPage() {
     <div className="mx-auto max-w-xl py-10">
       <div className="rounded-lg border border-border bg-card p-6">
         <h1 className="text-xl font-semibold">
-          {t("app.noCompanies.title", { defaultValue: "Create your first company" })}
+          {t("app.noCompanies.title", { defaultValue: "Create your first collection network" })}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {t("app.noCompanies.description", { defaultValue: "Get started by creating a company." })}
+          {t("app.noCompanies.description", { defaultValue: "Get started by creating a collection network." })}
         </p>
         <div className="mt-4">
           <Button onClick={() => openOnboarding()}>
-            {t("app.noCompanies.newCompany", { defaultValue: "New Company" })}
+            {t("app.noCompanies.newCompany", { defaultValue: "New Collection Network" })}
           </Button>
         </div>
       </div>

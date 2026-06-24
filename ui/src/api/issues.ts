@@ -20,6 +20,7 @@ import type {
   IssueTreeHold,
   IssueWatchdog,
   IssueWorkProduct,
+  EvidencePackage,
   PreviewIssueTreeControl,
   ReleaseIssueTreeHold,
   UpsertIssueWatchdog,
@@ -30,6 +31,17 @@ import { api } from "./client";
 export type IssueUpdateResponse = Issue & {
   comment?: IssueComment | null;
 };
+
+export interface EvidencePackageRecord extends EvidencePackage {
+  id: string;
+  company_id: string;
+  collection_agent_id: string;
+  content_hash: string;
+  dedupe_key: string;
+  duplicate_of_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export type ResolveRecoveryActionResponse = {
   issue: Issue;
@@ -309,6 +321,12 @@ export const issuesApi = {
   unlinkApproval: (id: string, approvalId: string) =>
     api.delete<{ ok: true }>(`/issues/${id}/approvals/${approvalId}`),
   listWorkProducts: (id: string) => api.get<IssueWorkProduct[]>(`/issues/${id}/work-products`),
+  listEvidencePackages: (collectionJobId: string) =>
+    api.get<EvidencePackageRecord[]>(`/collection-jobs/${collectionJobId}/evidence-packages`),
+  getEvidencePackage: (id: string) =>
+    api.get<EvidencePackageRecord>(`/evidence-packages/${id}`),
+  listDirectiveEvidencePackages: (collectionDirectiveId: string) =>
+    api.get<EvidencePackageRecord[]>(`/collection-directives/${collectionDirectiveId}/evidence-packages`),
   createWorkProduct: (id: string, data: Record<string, unknown>) =>
     api.post<IssueWorkProduct>(`/issues/${id}/work-products`, data),
   updateWorkProduct: (id: string, data: Record<string, unknown>) =>

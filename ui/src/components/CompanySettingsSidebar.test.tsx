@@ -150,8 +150,8 @@ describe("CompanySettingsSidebar", () => {
     await flushReact();
 
     expect(container.textContent).toContain("Paperclip");
-    expect(container.textContent).toContain("Company Settings");
-    expect(container.textContent).toContain("Company settings");
+    expect(container.textContent).toContain("Collection Network Settings");
+    expect(container.textContent).toContain("Collection network settings");
     expect(container.textContent).toContain("Instance settings");
     expect(container.textContent).toContain("General");
     expect(container.textContent).toContain("Environments");

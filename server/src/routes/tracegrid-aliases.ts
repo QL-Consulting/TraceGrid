@@ -24,8 +24,10 @@ function constantTimeEqual(left: string, right: string) {
 
 function bearerToken(req: Request) {
   const authorization = req.header("authorization")?.trim();
-  const match = authorization?.match(/^bearer\s+(.+)$/i);
-  return match?.[1]?.trim() || null;
+  if (!authorization) return null;
+  const prefix = "bearer ";
+  if (!authorization.toLowerCase().startsWith(prefix)) return null;
+  return authorization.slice(prefix.length).trim() || null;
 }
 
 function isAxiomForgeRequest(req: Request) {

@@ -132,10 +132,10 @@ export function OverviewSection({
             value={editDraft.assigneeAgentId}
             options={assigneeOptions}
             recentOptionIds={recentAssigneeIds}
-            placeholder="Assignee"
-            noneLabel="No assignee"
-            searchPlaceholder="Search assignees..."
-            emptyMessage="No assignees found."
+            placeholder="Collection Agent"
+            noneLabel="No collection agent"
+            searchPlaceholder="Search collection agents..."
+            emptyMessage="No collection agents found."
             onChange={(assigneeAgentId) =>
               setEditDraft((current) => ({ ...current, assigneeAgentId }))
             }
@@ -157,7 +157,7 @@ export function OverviewSection({
                   <span className="truncate">{option.label}</span>
                 )
               ) : (
-                <span className="text-muted-foreground">Assignee</span>
+                <span className="text-muted-foreground">Collection Agent</span>
               )
             }
             renderOption={(option) => {
@@ -217,8 +217,8 @@ export function OverviewSection({
 
       {!routine.assigneeAgentId ? (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-200">
-          Default agent required. This routine can stay as a draft and still run manually, but
-          automation stays paused until you assign a default agent.
+          Default collection agent required. This routine can stay as a draft and still run manually, but
+          automation stays paused until you assign a default collection agent.
         </div>
       ) : null}
 
@@ -598,7 +598,7 @@ export function SecretsSection() {
   const ctx = useRoutineDetail();
   const { editDraft, setEditDraft, availableSecrets, createSecret, secretMessage, copySecretValue } = ctx;
 
-  // Project/company-scoped secrets that already see real usage, surfaced as
+  // Project/collection-network-scoped secrets that already see real usage, surfaced as
   // quick-bind chips (§3.4). Ranked by reference count then recency.
   const recentlyUsedSecrets = useMemo(
     () =>
@@ -616,8 +616,8 @@ export function SecretsSection() {
   return (
     <div className="space-y-4">
       <div className="rounded-md border border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
-        Routine secrets apply to every task this routine creates. They override matching keys in
-        project and agent env. <span className="font-mono">PAPERCLIP_*</span> names are reserved.
+        Routine secrets apply to every collection job this routine creates. They override matching keys in
+        project and collection agent env. <span className="font-mono">PAPERCLIP_*</span> names are reserved.
       </div>
 
       {secretMessage ? (
@@ -625,7 +625,7 @@ export function SecretsSection() {
           <div>
             <p className="font-medium">{secretMessage.title}</p>
             <p className="text-xs text-muted-foreground">
-              Save this now. Paperclip will not show the secret value again.
+              Save this now. TraceGrid will not show the secret value again.
             </p>
           </div>
           <div className="space-y-3">

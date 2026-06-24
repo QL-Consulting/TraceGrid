@@ -76,6 +76,7 @@ import { IssueAttachmentsSection } from "../components/IssueAttachmentsSection";
 import { IssueDocumentsSection } from "../components/IssueDocumentsSection";
 import { IssuePlanDecompositionsSection } from "../components/IssuePlanDecompositionsSection";
 import { IssueOutputSection } from "../components/issue-output/IssueOutputSection";
+import { EvidencePackageSection } from "../components/EvidencePackageSection";
 import { isImageAttachment } from "../lib/issue-attachments";
 import { getPromotedOutputAttachmentIds } from "../lib/issue-output";
 import { IssueSiblingNavigation } from "../components/IssueSiblingNavigation";
@@ -1430,6 +1431,15 @@ export function IssueDetail() {
     queryFn: () => issuesApi.listWorkProducts(issueId!),
     enabled: !!issueId,
     placeholderData: keepPreviousDataForSameQueryTail<IssueWorkProduct[]>(issueId ?? "pending"),
+  });
+
+  const { data: evidencePackages } = useQuery({
+    queryKey: queryKeys.issues.evidencePackages(issueId!),
+    queryFn: () => issuesApi.listEvidencePackages(issueId!),
+    enabled: !!issueId,
+    placeholderData: keepPreviousDataForSameQueryTail<Awaited<ReturnType<typeof issuesApi.listEvidencePackages>>>(
+      issueId ?? "pending",
+    ),
   });
 
   const { data: liveRunCount = 0 } = useQuery<LiveRunForIssue[], Error, number>({
@@ -4090,6 +4100,8 @@ export function IssueDetail() {
         agentMap={agentMap}
         userProfileMap={userProfileMap}
       />
+
+      <EvidencePackageSection evidencePackages={evidencePackages} />
 
       <IssueOutputSection workProducts={workProducts} />
 

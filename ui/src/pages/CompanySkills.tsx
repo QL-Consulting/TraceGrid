@@ -451,13 +451,13 @@ function CompatChip({ compatibility }: { compatibility: CompanySkillCompatibilit
     unknown: {
       icon: HelpCircle,
       label: "Unknown format",
-      tooltip: "Paperclip could not validate this skill as Agent Skills markdown. Install at your own risk.",
+      tooltip: "TraceGrid could not validate this skill as Collection Agent Skills markdown. Install at your own risk.",
       className: "border-yellow-500/40 bg-yellow-500/10 text-yellow-200",
     },
     invalid: {
       icon: XOctagon,
       label: "Invalid",
-      tooltip: "This skill cannot be installed — content is not valid Agent Skills markdown.",
+      tooltip: "This skill cannot be installed — content is not valid Collection Agent Skills markdown.",
       className: "border-destructive/40 bg-destructive/10 text-destructive",
     },
   } as const;
@@ -508,7 +508,7 @@ const DISCOVERY_TABS: DiscoveryTab[] = ["all", "installed", "catalog", "bundled"
 type DiscoverySort = "agents" | "stars" | "forks" | "recent" | "alphabetical";
 
 const DISCOVERY_SORT_LABELS: Record<DiscoverySort, string> = {
-  agents: "Most agents",
+  agents: "Most collection agents",
   stars: "Most stars",
   forks: "Most forks",
   recent: "Recently updated",
@@ -622,7 +622,7 @@ function splitCategoryDraft(value: string) {
 
 function defaultSkillMarkdown(name: string, tagline: string) {
   const title = name.trim() || "New Skill";
-  const summary = tagline.trim() || "Describe when agents should use this skill.";
+  const summary = tagline.trim() || "Describe when collection agents should use this skill.";
   return [
     "---",
     `name: ${title}`,
@@ -635,11 +635,11 @@ function defaultSkillMarkdown(name: string, tagline: string) {
     "",
     "## When To Use",
     "",
-    "- Use this skill when the task needs its specialized workflow.",
+    "- Use this skill when the collection job needs its specialized workflow.",
     "",
     "## Workflow",
     "",
-    "1. Inspect the task context.",
+    "1. Inspect the collection job context.",
     "2. Apply the workflow carefully.",
     "3. Report what changed and how it was verified.",
     "",
@@ -832,7 +832,7 @@ function SkillCard({ card, onOpen }: { card: DiscoveryCard; onOpen: (card: Disco
       </p>
 
       <div className="mt-auto pt-3">
-        {/* Stats: installed agents · stars · forks — stars/forks only when > 0. */}
+        {/* Stats: installed collection agents · stars · forks — stars/forks only when > 0. */}
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
           <span>{card.agentCount} {card.agentCount === 1 ? "agent" : "agents"}</span>
           {card.starCount > 0 ? (
@@ -4331,7 +4331,7 @@ export function CompanySkills() {
   });
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Boxes} message="Select a company to manage skills." />;
+    return <EmptyState icon={Boxes} message="Select a collection network to manage skills." />;
   }
 
   function handleAddSkillSource() {

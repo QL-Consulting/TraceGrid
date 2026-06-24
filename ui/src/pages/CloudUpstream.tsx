@@ -45,9 +45,9 @@ const ACTIVATION_CATEGORIES: Array<{
 }> = [
   {
     key: "agents",
-    label: "Agents",
-    singular: "agent",
-    detail: "Confirm cloud secrets and adapter credentials before unpausing imported agents.",
+    label: "Collection Agents",
+    singular: "collection agent",
+    detail: "Confirm cloud secrets and adapter credentials before unpausing imported collection agents.",
   },
   {
     key: "routines",
@@ -76,7 +76,7 @@ export function CloudUpstream() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
+      { label: selectedCompany?.name ?? "Collection Network", href: "/dashboard" },
       { label: "Settings", href: "/company/settings" },
       { label: "Cloud upstream" },
     ]);
@@ -204,7 +204,7 @@ export function CloudUpstream() {
   }
 
   if (!selectedCompanyId || !selectedCompany) {
-    return <div className="text-sm text-muted-foreground">Select a company to configure cloud upstream.</div>;
+    return <div className="text-sm text-muted-foreground">Select a collection network to configure cloud upstream.</div>;
   }
 
   if (experimentalQuery.isLoading) {
@@ -241,7 +241,7 @@ export function CloudUpstream() {
             <h1 className="text-lg font-semibold">Cloud upstream</h1>
           </div>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Push {selectedCompany.name} into a Paperclip Cloud stack. Automations stay paused until activation.
+            Push {selectedCompany.name} into a TraceGrid Cloud stack. Automations stay paused until activation.
           </p>
         </div>
         {connection?.target.origin ? (
@@ -301,8 +301,8 @@ export function CloudUpstream() {
               <Input
                 value={remoteUrl}
                 onChange={(event) => setRemoteUrl(event.target.value)}
-                placeholder="https://paperclip.paperclip.app/PC521D/dashboard"
-                aria-label="Paperclip Cloud stack URL"
+                placeholder="https://tracegrid.example/PC521D/dashboard"
+                aria-label="TraceGrid Cloud stack URL"
               />
               <Button onClick={() => startMutation.mutate()} disabled={startMutation.isPending || !remoteUrl.trim()}>
                 {startMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CloudUpload className="h-4 w-4" />}
@@ -338,7 +338,7 @@ export function CloudUpstream() {
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={() => downloadRunReport(latestRun)}>
                 <FileJson className="h-4 w-4" />
-                Download report
+                Download run JSON
               </Button>
               {latestRun.status === "failed" || latestRun.status === "cancelled" ? (
                 <Button
@@ -437,8 +437,8 @@ function PreviewProgressHint() {
   const message = elapsed < 15
     ? "Building manifest..."
     : elapsed < 45
-      ? `Building manifest... ${elapsed}s. Large companies can take up to a minute.`
-      : `Still building manifest... ${elapsed}s. PAP-scale companies routinely take ~60s.`;
+      ? `Building manifest... ${elapsed}s. Large collection networks can take up to a minute.`
+      : `Still building manifest... ${elapsed}s. PAP-scale collection networks routinely take ~60s.`;
   return <div className="text-xs text-muted-foreground">{message}</div>;
 }
 
@@ -643,7 +643,7 @@ function formatBytes(value: number) {
 function previewErrorMessage(error: unknown): string {
   const code = error instanceof Error ? error.message : null;
   if (code === "payload_too_large" || code === "bad_request") {
-    return "Local company is too large to preview as a single request. Click Push to continue (the Push step uploads in chunks), or see the docs for chunked-preview options.";
+    return "Local collection network is too large to preview as a single request. Click Push to continue (the Push step uploads in chunks), or see the docs for chunked-preview options.";
   }
   return code ?? "Failed to preview push.";
 }

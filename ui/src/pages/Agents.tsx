@@ -19,7 +19,7 @@ import { PageTabBar } from "../components/PageTabBar";
 import { Tabs } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Bot, Plus, List, GitBranch } from "lucide-react";
-import { AGENT_ROLE_LABELS, type Agent } from "@paperclipai/shared";
+import { AGENT_ROLE_LABELS, TRACEGRID_SOURCE_TYPE_LABELS, type Agent } from "@paperclipai/shared";
 import {
   resourceMembershipState,
   useResourceMembershipMutation,
@@ -29,6 +29,7 @@ import {
 import { getAdapterLabel } from "../adapters/adapter-display-registry";
 
 const roleLabels = AGENT_ROLE_LABELS as Record<string, string>;
+const sourceTypeLabels = TRACEGRID_SOURCE_TYPE_LABELS as Record<string, string>;
 
 type FilterTab = "all" | "active" | "paused" | "error";
 
@@ -56,6 +57,15 @@ function getConfiguredModel(agent: Agent): string | null {
   if (typeof value !== "string") return null;
   const model = value.trim();
   return model.length > 0 ? model : null;
+}
+
+function CollectionSourceBadge({ sourceType }: { sourceType?: string | null }) {
+  if (!sourceType) return null;
+  return (
+    <span className="inline-flex shrink-0 items-center rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+      {sourceTypeLabels[sourceType] ?? sourceType.replace(/_/g, " ")}
+    </span>
+  );
 }
 
 function filterOrgTree(nodes: OrgNode[], tab: FilterTab): OrgNode[] {
@@ -132,11 +142,11 @@ export function Agents() {
   }, [agents]);
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Agents" }]);
+    setBreadcrumbs([{ label: "Collection Agents" }]);
   }, [setBreadcrumbs]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Bot} message="Select a company to view agents." />;
+    return <EmptyState icon={Bot} message="Select a collection network to view collection agents." />;
   }
 
   if (isLoading) {
@@ -187,13 +197,13 @@ export function Agents() {
           )}
           <Button size="sm" variant="outline" onClick={openNewAgent}>
             <Plus className="h-3.5 w-3.5 mr-1.5" />
-            New Agent
+            New Collection Agent
           </Button>
         </div>
       </div>
 
       {filtered.length > 0 && (
-        <p className="text-xs text-muted-foreground">{filtered.length} agent{filtered.length !== 1 ? "s" : ""}</p>
+        <p className="text-xs text-muted-foreground">{filtered.length} collection agent{filtered.length !== 1 ? "s" : ""}</p>
       )}
 
       {error && <p className="text-sm text-destructive">{error.message}</p>}
@@ -201,8 +211,8 @@ export function Agents() {
       {agents && agents.length === 0 && (
         <EmptyState
           icon={Bot}
-          message="Create your first agent to get started."
-          action="New Agent"
+          message="Create your first collection agent to get started."
+          action="New Collection Agent"
           onAction={openNewAgent}
         />
       )}
@@ -234,9 +244,12 @@ export function Agents() {
                   <AgentStatusCapsule status={agent.status} />
                 )}
                 meta={
-                  <div className="hidden xl:flex items-center gap-3">
-                    <AgentMetaColumns agent={agent} />
-                  </div>
+                  <>
+                    <CollectionSourceBadge sourceType={agent.collectionSourceType} />
+                    <div className="hidden xl:flex items-center gap-3">
+                      <AgentMetaColumns agent={agent} />
+                    </div>
+                  </>
                 }
                 trailing={
                   <div className="flex items-center gap-3">
@@ -316,7 +329,7 @@ export function Agents() {
 
       {effectiveView === "list" && agents && agents.length > 0 && filtered.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          No agents match the selected filter.
+          No collection agents match the selected filter.
         </p>
       )}
 
@@ -340,7 +353,7 @@ export function Agents() {
 
       {effectiveView === "org" && orgTree && orgTree.length > 0 && filteredOrg.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          No agents match the selected filter.
+          No collection agents match the selected filter.
         </p>
       )}
 
@@ -398,6 +411,11 @@ function OrgTreeNode({
             {roleLabels[node.role] ?? node.role}
             {agent?.title ? ` - ${agent.title}` : ""}
           </span>
+          {agent?.collectionSourceType ? (
+            <span className="ml-2 align-middle">
+              <CollectionSourceBadge sourceType={agent.collectionSourceType} />
+            </span>
+          ) : null}
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span className="sm:hidden">

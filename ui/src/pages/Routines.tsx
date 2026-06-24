@@ -159,13 +159,13 @@ export function buildRoutineGroups(
   const groups = groupBy(routines, (routine) => routine.assigneeAgentId ?? "__unassigned");
   return Object.keys(groups)
     .sort((left, right) => {
-      const leftLabel = left === "__unassigned" ? "Unassigned" : (agentById.get(left)?.name ?? "Unknown agent");
-      const rightLabel = right === "__unassigned" ? "Unassigned" : (agentById.get(right)?.name ?? "Unknown agent");
+      const leftLabel = left === "__unassigned" ? "Unassigned" : (agentById.get(left)?.name ?? "Unknown collection agent");
+      const rightLabel = right === "__unassigned" ? "Unassigned" : (agentById.get(right)?.name ?? "Unknown collection agent");
       return leftLabel.localeCompare(rightLabel);
     })
     .map((key) => ({
       key,
-      label: key === "__unassigned" ? "Unassigned" : (agentById.get(key)?.name ?? "Unknown agent"),
+      label: key === "__unassigned" ? "Unassigned" : (agentById.get(key)?.name ?? "Unknown collection agent"),
       items: groups[key]!,
     }));
 }
@@ -313,7 +313,7 @@ export function Routines() {
         title: "Routine created",
         body: routine.assigneeAgentId
           ? "Add the first trigger to turn it into a live workflow."
-          : "Draft saved. Add a default agent before enabling automation.",
+          : "Draft saved. Add a default collection agent before enabling automation.",
         tone: "success",
       });
       navigate(`/routines/${routine.id}?tab=triggers`);
@@ -344,7 +344,7 @@ export function Routines() {
     onError: (mutationError) => {
       pushToast({
         title: "Failed to update routine",
-        body: mutationError instanceof Error ? mutationError.message : "Paperclip could not update the routine.",
+        body: mutationError instanceof Error ? mutationError.message : "TraceGrid could not update the routine.",
         tone: "error",
       });
     },
@@ -379,7 +379,7 @@ export function Routines() {
     onError: (mutationError) => {
       pushToast({
         title: "Routine run failed",
-        body: mutationError instanceof Error ? mutationError.message : "Paperclip could not start the routine run.",
+        body: mutationError instanceof Error ? mutationError.message : "TraceGrid could not start the routine run.",
         tone: "error",
       });
     },
@@ -463,8 +463,8 @@ export function Routines() {
   function handleToggleEnabled(routine: RoutineListItem, enabled: boolean) {
     if (!enabled && !routine.assigneeAgentId) {
       pushToast({
-        title: "Default agent required",
-        body: "Set a default agent before enabling routine automation.",
+        title: "Default collection agent required",
+        body: "Set a default collection agent before enabling routine automation.",
         tone: "warn",
       });
       return;
@@ -483,7 +483,7 @@ export function Routines() {
   }
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Repeat} message="Select a company to view routines." />;
+    return <EmptyState icon={Repeat} message="Select a collection network to view routines." />;
   }
 
   if (isLoading) {
@@ -498,7 +498,7 @@ export function Routines() {
             Routines
           </h1>
           <p className="text-sm text-muted-foreground">
-            Recurring work definitions that materialize into auditable execution tasks.
+            Recurring collection definitions that materialize into auditable collection jobs.
           </p>
         </div>
         <Button onClick={() => setComposerOpen(true)}>
@@ -575,7 +575,7 @@ export function Routines() {
                   <div className="p-2 space-y-0.5">
                     {([
                       ["project", "Project"],
-                      ["assignee", "Agent"],
+                      ["assignee", "Collection Agent"],
                       ["none", "None"],
                     ] as const).map(([value, label]) => (
                       <button
@@ -628,7 +628,7 @@ export function Routines() {
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">New routine</p>
               <p className="text-sm text-muted-foreground">
-                Define the recurring work first. Default project and agent are optional for draft routines.
+                Define the recurring collection first. Default project and collection agent are optional for draft routines.
               </p>
             </div>
             <Button
@@ -688,10 +688,10 @@ export function Routines() {
                     value={draft.assigneeAgentId}
                     options={assigneeOptions}
                     recentOptionIds={recentAssigneeIds}
-                    placeholder="Assignee"
-                    noneLabel="No assignee"
-                    searchPlaceholder="Search assignees..."
-                    emptyMessage="No assignees found."
+                    placeholder="Collection Agent"
+                    noneLabel="No collection agent"
+                    searchPlaceholder="Search collection agents..."
+                    emptyMessage="No collection agents found."
                     onChange={(assigneeAgentId) => {
                       if (assigneeAgentId) trackRecentAssignee(assigneeAgentId);
                       setDraft((current) => ({ ...current, assigneeAgentId }));
@@ -714,7 +714,7 @@ export function Routines() {
                           <span className="truncate">{option.label}</span>
                         )
                       ) : (
-                        <span className="text-muted-foreground">Assignee</span>
+                        <span className="text-muted-foreground">Collection Agent</span>
                       )
                     }
                     renderOption={(option) => {
@@ -796,7 +796,7 @@ export function Routines() {
                 <CollapsibleTrigger className="flex w-full items-center justify-between text-left">
                   <div>
                     <p className="text-sm font-medium">Advanced delivery settings</p>
-                    <p className="text-sm text-muted-foreground">Keep policy controls secondary to the work definition.</p>
+                    <p className="text-sm text-muted-foreground">Keep policy controls secondary to the collection definition.</p>
                   </div>
                   {advancedOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                 </CollapsibleTrigger>
@@ -844,7 +844,7 @@ export function Routines() {
 
           <div className="shrink-0 flex flex-col gap-3 border-t border-border/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
-              After creation, Paperclip takes you straight to trigger setup. Draft routines stay paused until you add a default agent.
+              After creation, TraceGrid takes you straight to trigger setup. Draft routines stay paused until you add a default collection agent.
             </div>
             <div className="flex flex-col gap-2 sm:items-end">
               <Button

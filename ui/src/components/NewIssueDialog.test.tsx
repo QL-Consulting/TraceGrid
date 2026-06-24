@@ -352,11 +352,11 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    expect(container.textContent).toContain("New sub-task");
-    expect(container.textContent).toContain("Sub-task of");
+    expect(container.textContent).toContain("New sub-job");
+    expect(container.textContent).toContain("Sub-job of");
     expect(container.textContent).toContain("PAP-1");
     expect(container.textContent).toContain("Parent issue");
-    expect(container.textContent).toContain("Create Sub-Task");
+    expect(container.textContent).toContain("Create Sub-Job");
 
     act(() => root.unmount());
 
@@ -364,9 +364,9 @@ describe("NewIssueDialog", () => {
     const rerendered = renderDialog(container);
     await flush();
 
-    expect(container.textContent).toContain("New task");
-    expect(container.textContent).toContain("Create Task");
-    expect(container.textContent).not.toContain("Sub-task of");
+    expect(container.textContent).toContain("New collection job");
+    expect(container.textContent).toContain("Create Collection Job");
+    expect(container.textContent).not.toContain("Sub-job of");
 
     act(() => rerendered.root.unmount());
   });
@@ -421,7 +421,7 @@ describe("NewIssueDialog", () => {
     expect(mockExecutionWorkspacesApi.list).not.toHaveBeenCalled();
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Sub-Task"));
+      .find((button) => button.textContent?.includes("Create Sub-Job"));
     expect(submitButton).not.toBeUndefined();
     await waitForAssertion(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -460,7 +460,7 @@ describe("NewIssueDialog", () => {
     expect(planningButton?.className).toContain("bg-accent");
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -495,7 +495,7 @@ describe("NewIssueDialog", () => {
     expect(askButton?.className).toContain("bg-accent");
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -566,14 +566,14 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    expect(container.textContent).toContain("New task");
-    expect(container.textContent).not.toContain("New sub-task");
+    expect(container.textContent).toContain("New collection job");
+    expect(container.textContent).not.toContain("New sub-job");
     await waitForAssertion(() => {
       expect(container.textContent).toContain("Reusing PAP-100");
     });
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
 
     await act(async () => {
@@ -613,7 +613,7 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    const titleInput = container.querySelector('textarea[placeholder="Task title"]') as HTMLTextAreaElement | null;
+    const titleInput = container.querySelector('textarea[placeholder="Collection job title"]') as HTMLTextAreaElement | null;
     const descriptionInput = container.querySelector('textarea[aria-label="Add description..."]') as HTMLTextAreaElement | null;
     expect(titleInput).not.toBeNull();
     expect(descriptionInput).not.toBeNull();
@@ -636,7 +636,7 @@ describe("NewIssueDialog", () => {
     await flush();
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -659,6 +659,52 @@ describe("NewIssueDialog", () => {
     act(() => root.unmount());
   });
 
+  it("submits the assigned collection agent source type by default", async () => {
+    mockAgentsApi.list.mockResolvedValue([
+      {
+        id: "agent-1",
+        name: "Web Collector",
+        role: "researcher",
+        title: null,
+        icon: null,
+        status: "active",
+        permissions: { canCreateAgents: false },
+        adapterType: "process",
+        collectionSourceType: "web",
+      },
+    ]);
+    dialogState.newIssueDefaults = {
+      title: "Collect the web source",
+      assigneeAgentId: "agent-1",
+    };
+
+    const { root } = renderDialog(container);
+    await flush();
+
+    expect(container.textContent).toContain("Web");
+    const submitButton = Array.from(container.querySelectorAll("button"))
+      .find((button) => button.textContent?.includes("Create Collection Job"));
+    expect(submitButton).not.toBeUndefined();
+    await vi.waitFor(() => {
+      expect(submitButton?.hasAttribute("disabled")).toBe(false);
+    });
+
+    await act(async () => {
+      submitButton!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(mockIssuesApi.create).toHaveBeenCalledWith(
+      "company-1",
+      expect.objectContaining({
+        title: "Collect the web source",
+        assigneeAgentId: "agent-1",
+        collectionSourceType: "web",
+      }),
+    );
+
+    act(() => root.unmount());
+  });
+
   it("submits Chinese, Japanese, and Hindi issue text without normalization", async () => {
     const title = "验证中文任务";
     const description = [
@@ -670,7 +716,7 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    const titleInput = container.querySelector('textarea[placeholder="Task title"]') as HTMLTextAreaElement | null;
+    const titleInput = container.querySelector('textarea[placeholder="Collection job title"]') as HTMLTextAreaElement | null;
     const descriptionInput = container.querySelector('textarea[aria-label="Add description..."]') as HTMLTextAreaElement | null;
     expect(titleInput).not.toBeNull();
     expect(descriptionInput).not.toBeNull();
@@ -679,7 +725,7 @@ describe("NewIssueDialog", () => {
     await typeTextareaValue(descriptionInput!, description);
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -706,7 +752,7 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    const titleInput = container.querySelector('textarea[placeholder="Task title"]') as HTMLTextAreaElement | null;
+    const titleInput = container.querySelector('textarea[placeholder="Collection job title"]') as HTMLTextAreaElement | null;
     expect(titleInput).not.toBeNull();
     await typeTextareaValue(titleInput!, "Plan this first");
 
@@ -718,7 +764,7 @@ describe("NewIssueDialog", () => {
     await flush();
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -744,7 +790,7 @@ describe("NewIssueDialog", () => {
     const { root } = renderDialog(container);
     await flush();
 
-    const titleInput = container.querySelector('textarea[placeholder="Task title"]') as HTMLTextAreaElement | null;
+    const titleInput = container.querySelector('textarea[placeholder="Collection job title"]') as HTMLTextAreaElement | null;
     expect(titleInput).not.toBeNull();
     await typeTextareaValue(titleInput!, "Answer this first");
 
@@ -756,7 +802,7 @@ describe("NewIssueDialog", () => {
     await flush();
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);
@@ -833,7 +879,7 @@ describe("NewIssueDialog", () => {
     await flush();
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Sub-Task"));
+      .find((button) => button.textContent?.includes("Create Sub-Job"));
     expect(submitButton).not.toBeUndefined();
 
     await act(async () => {
@@ -867,7 +913,7 @@ describe("NewIssueDialog", () => {
     expect(dialogContent?.getAttribute("style")).toContain("env(safe-area-inset-top)");
     expect(dialogContent?.getAttribute("style")).toContain("env(safe-area-inset-bottom)");
 
-    const titleInput = container.querySelector('textarea[placeholder="Task title"]');
+    const titleInput = container.querySelector('textarea[placeholder="Collection job title"]');
     const descriptionInput = container.querySelector('textarea[aria-label="Add description..."]');
     const bodyScrollRegion = Array.from(container.querySelectorAll("div")).find((element) =>
       typeof element.className === "string" && element.className.includes("overscroll-contain"),
@@ -975,7 +1021,7 @@ describe("NewIssueDialog", () => {
     await flush();
     await flush();
 
-    expect(container.textContent).not.toContain("will no longer use the parent task workspace");
+    expect(container.textContent).not.toContain("will no longer use the parent collection job workspace");
 
     const selects = Array.from(container.querySelectorAll("select"));
     const modeSelect = selects[0] as HTMLSelectElement | undefined;
@@ -987,7 +1033,7 @@ describe("NewIssueDialog", () => {
     });
     await flush();
 
-    expect(container.textContent).toContain("will no longer use the parent task workspace");
+    expect(container.textContent).toContain("will no longer use the parent collection job workspace");
     expect(container.textContent).toContain("Parent workspace");
 
     act(() => root.unmount());
@@ -1051,7 +1097,7 @@ describe("NewIssueDialog", () => {
     expect(container.textContent).toContain("Keep it moving");
 
     const submitButton = Array.from(container.querySelectorAll("button"))
-      .find((button) => button.textContent?.includes("Create Task"));
+      .find((button) => button.textContent?.includes("Create Collection Job"));
     expect(submitButton).not.toBeUndefined();
     await vi.waitFor(() => {
       expect(submitButton?.hasAttribute("disabled")).toBe(false);

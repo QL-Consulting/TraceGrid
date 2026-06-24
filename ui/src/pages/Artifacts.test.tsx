@@ -208,7 +208,7 @@ describe("Artifacts page", () => {
 
     const { root } = renderArtifacts(container);
 
-    const input = container.querySelector('input[aria-label="Search artifacts"]') as HTMLInputElement;
+    const input = container.querySelector('input[aria-label="Search evidence packages"]') as HTMLInputElement;
     expect(input).not.toBeNull();
 
     flushSync(() => {
@@ -361,7 +361,7 @@ describe("Artifacts page", () => {
       expect(card.getAttribute("data-count")).toBe("4");
       expect(card.getAttribute("data-stacked")).toBe("true");
       expect(card.getAttribute("href")).toBe("/artifacts?groupIssueId=issue-1");
-      expect(card.textContent).toContain("4 artifacts");
+      expect(card.textContent).toContain("4 evidence packages");
     });
 
     flushSync(() => {

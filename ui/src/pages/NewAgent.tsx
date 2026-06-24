@@ -9,7 +9,13 @@ import { issuesApi } from "../api/issues";
 import { projectsApi } from "../api/projects";
 import { queryKeys } from "../lib/queryKeys";
 import { resolveSkillSummaryText } from "../lib/company-skill-summary";
-import { AGENT_ROLES, type AdapterEnvironmentTestResult, type AgentPermissions } from "@paperclipai/shared";
+import {
+  AGENT_ROLES,
+  TRACEGRID_SOURCE_TYPES,
+  TRACEGRID_SOURCE_TYPE_LABELS,
+  type AdapterEnvironmentTestResult,
+  type AgentPermissions,
+} from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -67,6 +73,7 @@ export function NewAgent() {
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [role, setRole] = useState("general");
+  const [collectionSourceType, setCollectionSourceType] = useState<string>("");
   const [reportsTo, setReportsTo] = useState<string | null>(null);
   const [configValues, setConfigValues] = useState<CreateConfigValues>(defaultCreateValues);
   const [permissions, setPermissions] = useState<Partial<AgentPermissions>>(
@@ -74,6 +81,7 @@ export function NewAgent() {
   );
   const [selectedSkillKeys, setSelectedSkillKeys] = useState<string[]>([]);
   const [roleOpen, setRoleOpen] = useState(false);
+  const [sourceTypeOpen, setSourceTypeOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [testAgentAction, setTestAgentAction] = useState<(() => void) | null>(null);
   const [testAgentState, setTestAgentState] = useState({ disabled: true, pending: false });
@@ -118,8 +126,8 @@ export function NewAgent() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Agents", href: "/agents" },
-      { label: "New Agent" },
+      { label: "Collection Agents", href: "/agents" },
+      { label: "New Collection Agent" },
     ]);
   }, [setBreadcrumbs]);
 
@@ -149,7 +157,7 @@ export function NewAgent() {
       navigate(agentUrl(result.agent));
     },
     onError: (error) => {
-      setFormError(error instanceof Error ? error.message : "Failed to create agent");
+      setFormError(error instanceof Error ? error.message : "Failed to create collection agent");
     },
   });
 
@@ -173,6 +181,7 @@ export function NewAgent() {
         effectiveRole,
         title,
         reportsTo,
+        collectionSourceType,
         selectedSkillKeys,
         configValues,
         adapterConfig: buildAdapterConfig(),
@@ -210,9 +219,9 @@ export function NewAgent() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-lg font-semibold">New Agent</h1>
+        <h1 className="text-lg font-semibold">New Collection Agent</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Advanced agent configuration
+          Advanced collection agent configuration
         </p>
       </div>
 
@@ -269,6 +278,41 @@ export function NewAgent() {
             </PopoverContent>
           </Popover>
 
+          <Popover open={sourceTypeOpen} onOpenChange={setSourceTypeOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs hover:bg-accent/50 transition-colors"
+              >
+                {collectionSourceType
+                  ? TRACEGRID_SOURCE_TYPE_LABELS[collectionSourceType as keyof typeof TRACEGRID_SOURCE_TYPE_LABELS]
+                  : "Any source"}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-1" align="start">
+              <button
+                className={cn(
+                  "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                  !collectionSourceType && "bg-accent"
+                )}
+                onClick={() => { setCollectionSourceType(""); setSourceTypeOpen(false); }}
+              >
+                Any source
+              </button>
+              {TRACEGRID_SOURCE_TYPES.map((sourceType) => (
+                <button
+                  key={sourceType}
+                  className={cn(
+                    "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                    sourceType === collectionSourceType && "bg-accent"
+                  )}
+                  onClick={() => { setCollectionSourceType(sourceType); setSourceTypeOpen(false); }}
+                >
+                  {TRACEGRID_SOURCE_TYPE_LABELS[sourceType]}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+
           <ReportsToPicker
             agents={agents ?? []}
             value={reportsTo}
@@ -308,14 +352,14 @@ export function NewAgent() {
         <div className="border-t border-border px-4 py-4">
           <div className="space-y-3">
             <div>
-              <h2 className="text-sm font-medium">Company skills</h2>
+              <h2 className="text-sm font-medium">Collection network skills</h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Optional skills from the company library. Built-in Paperclip runtime skills are added automatically.
+                Optional skills from the collection network library. Built-in runtime skills are added automatically.
               </p>
             </div>
             {availableSkills.length === 0 ? (
               <p className="text-xs text-muted-foreground">
-                No optional company skills installed yet.
+                No optional collection network skills installed yet.
               </p>
             ) : (
               <div className="space-y-3">
@@ -378,7 +422,7 @@ export function NewAgent() {
                   disabled={!name.trim() || createAgent.isPending}
                   onClick={handleSubmit}
                 >
-                  {createAgent.isPending ? "Creating…" : "Create agent"}
+                  {createAgent.isPending ? "Creating…" : "Create collection agent"}
                 </Button>
               </div>
             </div>

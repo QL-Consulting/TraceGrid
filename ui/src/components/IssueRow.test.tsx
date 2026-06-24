@@ -314,4 +314,18 @@ describe("IssueRow", () => {
       root.unmount();
     });
   });
+
+  it("shows the TraceGrid source type for collection jobs", () => {
+    const root = createRoot(container);
+
+    act(() => {
+      root.render(<IssueRow issue={createIssue({ collectionSourceType: "youtube_transcript" })} />);
+    });
+
+    expect(container.textContent).toContain("YouTube/Transcript");
+
+    act(() => {
+      root.unmount();
+    });
+  });
 });

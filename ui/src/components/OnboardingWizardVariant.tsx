@@ -9,9 +9,8 @@ import { OnboardingWizardClassic } from "./OnboardingWizardClassic";
  * Flag off (the default) renders `OnboardingWizardClassic` — the
  * fork-and-freeze of master's wizard — so the experience stays
  * pixel-identical to master. Flag on renders the new capsule wizard. While
- * the flag query is still in flight nothing renders (same `loaded` pattern
- * as `ConferenceRoomChatGate`) so a flag-on user never sees the classic
- * wizard flash in first.
+ * the flag query is still in flight nothing renders so a flag-on user never
+ * sees the classic wizard flash in first.
  */
 export function OnboardingWizardVariant() {
   const { enabled, loaded } = useConferenceRoomChatEnabled();

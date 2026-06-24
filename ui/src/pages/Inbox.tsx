@@ -1927,7 +1927,7 @@ export function Inbox() {
   }, [selectedIndex]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={InboxIcon} message="Select a company to view inbox." />;
+    return <EmptyState icon={InboxIcon} message="Select a collection network to view inbox." />;
   }
 
   const hasRunFailures = failedRuns.length > 0;

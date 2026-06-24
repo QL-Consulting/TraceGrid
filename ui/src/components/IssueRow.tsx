@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
-import type { ExternalObjectSummary, Issue, IssueRecoveryAction } from "@paperclipai/shared";
+import {
+  TRACEGRID_SOURCE_TYPE_LABELS,
+  type ExternalObjectSummary,
+  type Issue,
+  type IssueRecoveryAction,
+} from "@paperclipai/shared";
 import { Link } from "@/lib/router";
 import { Eye, Flag, X } from "lucide-react";
 import {
@@ -19,6 +24,7 @@ import { hasAssignedBacklogBlocker } from "../lib/issue-blockers";
 import { ExternalObjectStatusSummary } from "./ExternalObjectStatusSummary";
 
 type UnreadState = "hidden" | "visible" | "fading";
+const sourceTypeLabels = TRACEGRID_SOURCE_TYPE_LABELS as Record<string, string>;
 
 interface IssueRowProps {
   issue: Issue;
@@ -98,6 +104,11 @@ export function IssueRow({
   ) : null;
   const recoveryAction = issue.activeRecoveryAction ?? null;
   const recoveryIndicator = recoveryAction ? renderRecoveryChip(recoveryAction, selected) : null;
+  const collectionSourceBadge = issue.collectionSourceType ? (
+    <span className="ml-1.5 inline-flex shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+      {sourceTypeLabels[issue.collectionSourceType] ?? issue.collectionSourceType.replace(/_/g, " ")}
+    </span>
+  ) : null;
   const parkedBlockerIndicator = hasAssignedBacklogBlocker(issue.blockedBy) ? (
     <span
       data-testid="issue-row-parked-blocker"
@@ -131,6 +142,7 @@ export function IssueRow({
         {productivityReviewIndicator}
         {parkedBlockerIndicator}
         {recoveryIndicator}
+        {collectionSourceBadge}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1 sm:contents">
         <span className={cn("line-clamp-2 text-sm sm:order-2 sm:min-w-0 sm:flex-1 sm:truncate sm:line-clamp-none", titleClassName)}>
@@ -157,6 +169,7 @@ export function IssueRow({
               </span>
               {parkedBlockerIndicator}
               {recoveryIndicator}
+              {collectionSourceBadge}
             </>
           )}
           {mobileMeta ? (

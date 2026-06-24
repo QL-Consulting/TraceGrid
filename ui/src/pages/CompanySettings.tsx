@@ -147,7 +147,7 @@ export function CompanySettings() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
+      { label: selectedCompany?.name ?? "Collection Network", href: "/dashboard" },
       { label: "Settings" }
     ]);
   }, [setBreadcrumbs, selectedCompany?.name]);
@@ -155,7 +155,7 @@ export function CompanySettings() {
   if (!selectedCompany) {
     return (
       <div className="text-sm text-muted-foreground">
-        No company selected. Select a company from the switcher above.
+        No collection network selected. Select a collection network from the switcher above.
       </div>
     );
   }
@@ -173,7 +173,7 @@ export function CompanySettings() {
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center gap-2">
         <Settings className="h-5 w-5 text-muted-foreground" />
-        <h1 className="text-lg font-semibold">Company Settings</h1>
+        <h1 className="text-lg font-semibold">Collection Network Settings</h1>
       </div>
 
       {/* General */}
@@ -182,7 +182,7 @@ export function CompanySettings() {
           General
         </div>
         <div className="space-y-3 rounded-md border border-border px-4 py-4">
-          <Field label="Company name" hint="The display name for your company.">
+          <Field label="Collection network name" hint="The display name for your collection network.">
             <input
               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
               type="text"
@@ -192,13 +192,13 @@ export function CompanySettings() {
           </Field>
           <Field
             label="Description"
-            hint="Optional description shown in the company profile."
+            hint="Optional description shown in the collection network profile."
           >
             <input
               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
               type="text"
               value={description}
-              placeholder="Optional company description"
+              placeholder="Optional collection network description"
               onChange={(e) => setDescription(e.target.value)}
             />
           </Field>
@@ -264,7 +264,7 @@ export function CompanySettings() {
               </Field>
               <Field
                 label="Brand color"
-                hint="Sets the hue for the company icon. Leave empty for auto-generated color."
+                hint="Sets the hue for the collection network icon. Leave empty for auto-generated color."
               >
                 <div className="flex items-center gap-2">
                   <input
@@ -356,8 +356,8 @@ export function CompanySettings() {
         </div>
         <div className="rounded-md border border-border px-4 py-3">
           <ToggleField
-            label="Require board approval for new hires"
-            hint="New agent hires stay pending until approved by board."
+            label="Require operator approval for new collection agents"
+            hint="New collection agent hires stay pending until approved by an operator."
             checked={!!selectedCompany.requireBoardApprovalForNewAgents}
             onChange={(v) => settingsMutation.mutate(v)}
             toggleTestId="company-settings-team-approval-toggle"
@@ -368,7 +368,7 @@ export function CompanySettings() {
       {/* Import / Export */}
       <div className="space-y-4">
         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Company Packages
+          Collection Network Packages
         </div>
         <div className="rounded-md border border-border px-4 py-4">
           <p className="text-sm text-muted-foreground">
@@ -380,7 +380,7 @@ export function CompanySettings() {
               <Button size="sm" asChild>
                 <a href="/company/settings/cloud-upstream">
                   <CloudUpload className="mr-1.5 h-3.5 w-3.5" />
-                  Send to Paperclip Cloud
+                  Send to TraceGrid Cloud
                 </a>
               </Button>
             ) : null}
@@ -407,7 +407,7 @@ export function CompanySettings() {
         </div>
         <div className="space-y-3 rounded-md border border-destructive/40 bg-destructive/5 px-4 py-4">
           <p className="text-sm text-muted-foreground">
-            Archive this company to hide it from the sidebar. This persists in
+            Archive this collection network to hide it from the sidebar. This persists in
             the database.
           </p>
           <div className="flex items-center gap-2">
@@ -421,7 +421,7 @@ export function CompanySettings() {
               onClick={() => {
                 if (!selectedCompanyId) return;
                 const confirmed = window.confirm(
-                  `Archive company "${selectedCompany.name}"? It will be hidden from the sidebar.`
+                  `Archive collection network "${selectedCompany.name}"? It will be hidden from the sidebar.`
                 );
                 if (!confirmed) return;
                 const nextCompanyId =
@@ -440,13 +440,13 @@ export function CompanySettings() {
                 ? "Archiving..."
                 : selectedCompany.status === "archived"
                 ? "Already archived"
-                : "Archive company"}
+                : "Archive collection network"}
             </Button>
             {archiveMutation.isError && (
               <span className="text-xs text-destructive">
                 {archiveMutation.error instanceof Error
                   ? archiveMutation.error.message
-                  : "Failed to archive company"}
+                  : "Failed to archive collection network"}
               </span>
             )}
           </div>

@@ -911,7 +911,7 @@ export function CompanyExport() {
   }
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Package} message="Select a company to export." />;
+    return <EmptyState icon={Package} message="Select a collection network to export." />;
   }
 
   if (exportPreviewMutation.isPending && !exportData) {

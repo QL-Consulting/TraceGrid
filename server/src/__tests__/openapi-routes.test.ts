@@ -18,13 +18,13 @@ const apiPrefixes: Record<string, string> = {
   "approvals.ts": "/api",
   "assets.ts": "/api",
   "auth.ts": "/api/auth",
-  "board-chat.ts": "/api",
   "cloud-upstreams.ts": "/api",
   "companies.ts": "/api/companies",
   "company-skills.ts": "/api",
   "costs.ts": "/api",
   "dashboard.ts": "/api",
   "environments.ts": "/api",
+  "evidence-packages.ts": "/api",
   "execution-workspaces.ts": "/api",
   "file-resources.ts": "/api",
   "goals.ts": "/api",
@@ -45,6 +45,7 @@ const apiPrefixes: Record<string, string> = {
   "sidebar-badges.ts": "/api",
   "sidebar-preferences.ts": "/api",
   "teams-catalog.ts": "/api",
+  "tracegrid-aliases.ts": "/api",
   "user-profiles.ts": "/api",
 };
 

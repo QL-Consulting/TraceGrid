@@ -194,6 +194,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
     name: string;
     status?: string;
     reportsTo?: string | null;
+    collectionSourceType?: string | null;
   }) {
     return {
       id: input.id,
@@ -202,6 +203,7 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
       role: "engineer",
       status: input.status ?? "active",
       reportsTo: input.reportsTo ?? null,
+      collectionSourceType: input.collectionSourceType ?? null,
       adapterType: "codex_local",
       adapterConfig: {},
       runtimeConfig: {},
@@ -231,6 +233,73 @@ describeEmbeddedPostgres("issueService.list participantAgentId", () => {
         reason: "assignee_terminated",
         assigneeAgentId: terminatedAgentId,
       },
+    });
+  });
+
+  it("persists TraceGrid collection source type for a matching collection agent", async () => {
+    const companyId = await seedAssignableAgentCompany();
+    const webAgentId = randomUUID();
+    await db.insert(agents).values(agentRow(companyId, {
+      id: webAgentId,
+      name: "Web Collector",
+      collectionSourceType: "web",
+    }));
+
+    const issue = await svc.create(companyId, {
+      title: "Collect web evidence",
+      description: null,
+      status: "todo",
+      priority: "medium",
+      assigneeAgentId: webAgentId,
+      collectionSourceType: "web",
+    });
+
+    expect(issue.collectionSourceType).toBe("web");
+  });
+
+  it("rejects TraceGrid collection source mismatches on create and update", async () => {
+    const companyId = await seedAssignableAgentCompany();
+    const webAgentId = randomUUID();
+    const newsAgentId = randomUUID();
+    await db.insert(agents).values([
+      agentRow(companyId, {
+        id: webAgentId,
+        name: "Web Collector",
+        collectionSourceType: "web",
+      }),
+      agentRow(companyId, {
+        id: newsAgentId,
+        name: "News Collector",
+        collectionSourceType: "news_rss",
+      }),
+    ]);
+
+    await expect(svc.create(companyId, {
+      title: "Collect mismatched evidence",
+      description: null,
+      status: "todo",
+      priority: "medium",
+      assigneeAgentId: newsAgentId,
+      collectionSourceType: "web",
+    })).rejects.toMatchObject({
+      status: 422,
+      message: "Collection job source type must match the assigned collection agent source type",
+    });
+
+    const issue = await svc.create(companyId, {
+      title: "Collect web evidence",
+      description: null,
+      status: "todo",
+      priority: "medium",
+      assigneeAgentId: webAgentId,
+      collectionSourceType: "web",
+    });
+
+    await expect(svc.update(issue.id, {
+      assigneeAgentId: newsAgentId,
+    })).rejects.toMatchObject({
+      status: 422,
+      message: "Collection job source type must match the assigned collection agent source type",
     });
   });
 

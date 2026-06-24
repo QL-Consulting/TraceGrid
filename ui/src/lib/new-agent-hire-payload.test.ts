@@ -42,6 +42,24 @@ describe("buildNewAgentHirePayload", () => {
     });
   });
 
+  it("includes TraceGrid collection source type when selected", () => {
+    expect(
+      buildNewAgentHirePayload({
+        name: "Web Collector",
+        effectiveRole: "researcher",
+        collectionSourceType: "web",
+        configValues: {
+          ...defaultCreateValues,
+          adapterType: "claude_local",
+        },
+        adapterConfig: {},
+      }),
+    ).toMatchObject({
+      name: "Web Collector",
+      collectionSourceType: "web",
+    });
+  });
+
   it("includes core trust preset permissions when provided", () => {
     expect(
       buildNewAgentHirePayload({

@@ -41,6 +41,28 @@ export {
   type SourceTrustMetadata,
 } from "./trust-policy.js";
 export {
+  TRACEGRID_TERMINOLOGY,
+  type TraceGridTerminology,
+} from "./tracegrid.js";
+export {
+  TRACEGRID_METHODOLOGY_STEP_IDS,
+  TRACEGRID_METHODOLOGY_STEP_LABELS,
+  TRACEGRID_METHODOLOGY_STEP_WEIGHTS,
+  TRACEGRID_METHODOLOGY_TOTAL_WEIGHT,
+  TRACEGRID_METHODOLOGY_MAX_STEP_SCORE,
+  TRACEGRID_METHODOLOGY_SCORE_VALUES,
+  TRACEGRID_CONFIDENCE_BANDS,
+  calculateTraceGridNormalizedConfidence,
+  getTraceGridConfidenceBand,
+  type TraceGridMethodologyStepId,
+  type TraceGridMethodologyScore,
+  type TraceGridMethodologyScoreMap,
+  type TraceGridConfidenceBand,
+  type TraceGridConfidenceBandId,
+  type TraceGridConfidenceCalculation,
+  type TraceGridCollectionAssessmentOutput,
+} from "./tracegrid-methodology.js";
+export {
   COMPANY_STATUSES,
   DEFAULT_COMPANY_ATTACHMENT_MAX_BYTES,
   MAX_COMPANY_ATTACHMENT_MAX_BYTES,
@@ -52,6 +74,10 @@ export {
   AGENT_ADAPTER_TYPES,
   AGENT_ROLES,
   AGENT_ROLE_LABELS,
+  TRACEGRID_SOURCE_TYPES,
+  TRACEGRID_SOURCE_TYPE_LABELS,
+  TRACEGRID_ROLE_TYPES,
+  TRACEGRID_ROLE_LABELS,
   AGENT_DEFAULT_MAX_CONCURRENT_RUNS,
   WORKSPACE_BRANCH_ROUTINE_VARIABLE,
   MODEL_PROFILE_KEYS,
@@ -190,6 +216,8 @@ export {
   type AgentStatus,
   type AgentAdapterType,
   type AgentRole,
+  type TraceGridSourceType,
+  type TraceGridRoleType,
   type ModelProfileKey,
   type AgentIconName,
   type ProjectIconName,
@@ -323,6 +351,7 @@ export {
 
 export type {
   Company,
+  EvidencePackage,
   Environment,
   EnvironmentLease,
   EnvironmentProbeResult,
@@ -866,6 +895,10 @@ export {
   updateResourceMembershipSchema,
   type UpdateResourceMembership,
 } from "./validators/resource-memberships.js";
+export {
+  evidencePackageSchema,
+  type EvidencePackageInput,
+} from "./validators/evidence.js";
 export {
   RESOURCE_MEMBERSHIP_STATES,
   type ResourceMembershipResourceType,

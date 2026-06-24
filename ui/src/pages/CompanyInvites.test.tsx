@@ -136,17 +136,17 @@ describe("CompanyInvites", () => {
     await flushReact();
     await flushReact();
 
-    expect(container.textContent).toContain("Company Invites");
+    expect(container.textContent).toContain("Collection Network Invites");
     expect(container.textContent).toContain("Invite a person");
-    expect(container.textContent).not.toContain("Invite an agent");
-    expect(container.textContent).not.toContain("Generate agent onboarding prompt");
+    expect(container.textContent).not.toContain("Invite a collection agent");
+    expect(container.textContent).not.toContain("Generate collection agent onboarding prompt");
     expect(container.textContent).toContain("Invite history");
     expect(container.textContent).toContain("Board User 25");
     expect(container.textContent).toContain("Board User 21");
     expect(container.textContent).not.toContain("Board User 20");
     expect(container.textContent).toContain("Review request");
     expect(container.textContent).toContain("View more");
-    expect(container.textContent).not.toContain("Human or agent");
+    expect(container.textContent).not.toContain("Human or collection agent");
     expect(container.textContent).not.toContain("Invite message");
     expect(container.textContent).not.toContain("Latest generated invite");
     expect(container.textContent).not.toContain("Active invites");
@@ -156,7 +156,7 @@ describe("CompanyInvites", () => {
 
     expect(container.textContent).toContain("Choose a role");
     expect(container.textContent).toContain("Each invite link is single-use.");
-    expect(container.textContent).toContain("Can create agents, invite users, assign tasks, and approve join requests.");
+    expect(container.textContent).toContain("Can create collection agents, invite users, assign collection jobs, and approve join requests.");
     expect(container.textContent).toContain("Everything in Admin, plus managing members.");
     expect(container.textContent).not.toContain("permission grants");
     expect(listInvitesMock).toHaveBeenCalledWith("company-1", { limit: 5, offset: 0 });
@@ -202,7 +202,7 @@ describe("CompanyInvites", () => {
     });
     expect(clipboardWriteTextMock).toHaveBeenCalledWith("https://paperclip.local/invite/new-token");
     expect(container.textContent).toContain("Latest invite link");
-    expect(container.textContent).toContain("This URL includes the current Paperclip domain returned by the server.");
+    expect(container.textContent).toContain("This URL includes the current TraceGrid domain returned by the server.");
     expect(container.querySelector('input[aria-label="Latest invite URL"]')).toHaveProperty(
       "value",
       "https://paperclip.local/invite/new-token",

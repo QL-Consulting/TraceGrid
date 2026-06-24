@@ -258,7 +258,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
   });
   const createSecret = useMutation({
     mutationFn: (input: { name: string; value: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to create secrets");
+      if (!selectedCompanyId) throw new Error("Select a collection network to create secrets");
       return secretsApi.create(selectedCompanyId, input);
     },
     onSuccess: () => {
@@ -556,7 +556,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
           </PropertyRow>
         )}
         <PropertyRow
-          label={<FieldLabel label="Goals" state={fieldState("goals")} />}
+          label={<FieldLabel label="Collection Directives" state={fieldState("goals")} />}
           alignStart
           valueClassName="space-y-2"
         >
@@ -575,7 +575,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                       className="text-muted-foreground hover:text-foreground"
                       type="button"
                       onClick={() => removeGoal(goal.id)}
-                      aria-label={`Remove goal ${goal.title}`}
+                      aria-label={`Remove collection directive ${goal.title}`}
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -594,13 +594,13 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                   disabled={availableGoals.length === 0}
                 >
                   <Plus className="h-3 w-3 mr-1" />
-                  Goal
+                  Collection Directive
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-56 p-1" align="start">
                 {availableGoals.length === 0 ? (
                   <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                    All goals linked.
+                    All collection directives linked.
                   </div>
                 ) : (
                   availableGoals.map((goal) => (
@@ -633,7 +633,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
               onChange={(env) => commitField("env", { env: env ?? null })}
             />
             <p className="text-[11px] text-muted-foreground">
-              Applied to all runs for tasks in this project. Project values override agent env on key conflicts.
+              Applied to all collection runs for collection jobs in this project. Project values override collection agent env on key conflicts.
             </p>
           </div>
         </PropertyRow>
@@ -667,7 +667,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                Repo identifies the source of truth. Local folder is the default place agents write code.
+                Repo identifies the source of truth. Local folder is the default place collection agents write files.
               </TooltipContent>
             </Tooltip>
           </div>
@@ -743,7 +743,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                     {codebase.effectiveLocalFolder}
                   </div>
                   {codebase.origin === "managed_checkout" && (
-                    <div className="text-[11px] text-muted-foreground">Paperclip-managed folder.</div>
+                    <div className="text-[11px] text-muted-foreground">TraceGrid-managed folder.</div>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
@@ -775,7 +775,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
 
             {hasAdditionalLegacyWorkspaces && (
               <div className="text-[11px] text-muted-foreground">
-                Additional legacy workspace records exist on this project. Paperclip is using the primary workspace as the codebase view.
+                Additional legacy workspace records exist on this project. TraceGrid is using the primary workspace as the codebase view.
               </div>
             )}
 
@@ -926,7 +926,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    Project-owned defaults for isolated task checkouts and execution workspace behavior.
+                    Project-owned defaults for isolated collection job checkouts and execution workspace behavior.
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -934,11 +934,11 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                 <div className="flex items-center justify-between gap-3">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2 text-sm font-medium">
-                      <span>Enable isolated task checkouts</span>
+                      <span>Enable isolated collection job checkouts</span>
                       <SaveIndicator state={fieldState("execution_workspace_enabled")} />
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Let tasks choose between the project's primary checkout and an isolated execution workspace.
+                      Let collection jobs choose between the project's primary checkout and an isolated execution workspace.
                     </div>
                   </div>
                   {onUpdate || onFieldUpdate ? (
@@ -962,11 +962,11 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                     <div className="flex items-center justify-between gap-3">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2 text-sm">
-                          <span>New tasks default to isolated checkout</span>
+                          <span>New collection jobs default to isolated checkout</span>
                           <SaveIndicator state={fieldState("execution_workspace_default_mode")} />
                         </div>
                         <div className="text-[11px] text-muted-foreground">
-                          If disabled, new tasks stay on the project's primary checkout unless someone opts in.
+                          If disabled, new collection jobs stay on the project's primary checkout unless someone opts in.
                         </div>
                       </div>
                       <ToggleSwitch
@@ -1150,7 +1150,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                           />
                         </div>
                         <p className="text-[11px] text-muted-foreground">
-                          Provision runs inside the derived worktree before agent execution. Teardown is stored here for
+                          Provision runs inside the derived worktree before collection agent execution. Teardown is stored here for
                           future cleanup flows.
                         </p>
                       </div>

@@ -14,12 +14,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  *   - Team-lead hire step (capsule wizard, PAP-125)
  *   - Onboarding front door (path picker)
  *   - "Add agents to your org" growth intake
- *   - Conference Room (BoardChat) shell + composer + activity feed
- *   - Artifacts page
+ *   - Evidence Packages page
  *
- * These are structural/rendering checks — LLM-dependent streaming (CEO chat
- * responses, hiring-plan generation) is verified separately on an LLM-backed
- * instance. Screenshots land in ./nux-phase4-shots for upload as evidence.
+ * These are structural/rendering checks. Screenshots land in
+ * ./nux-phase4-shots for upload as evidence.
  */
 
 // Write under the gitignored test-results dir so re-runs leave no untracked
@@ -129,23 +127,7 @@ test.describe("NUX Phase 4 visual QA", () => {
     ).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: shot("05-growth-intake.png") });
 
-    // ── Section C: Conference Room (BoardChat) ────────────────────────────
-    // Visit the company dashboard first so CompanyContext selects the company
-    // from the route before we land on the board-chat surface.
-    await page.evaluate(() => window.localStorage.clear());
-    await page.goto(`/${prefix}/dashboard`);
-    await page.waitForLoadState("networkidle");
-    await page.goto(`/${prefix}/board-chat`);
-    await expect(page).toHaveURL(new RegExp(`/${prefix}/board-chat`));
-    // Composer renders once a company is selected. (Regression guard for the
-    // Rules-of-Hooks crash that previously blanked this page — see PAP-50.)
-    await expect(
-      page.getByPlaceholder("Ask anything about your company..."),
-    ).toBeVisible({ timeout: 20_000 });
-    await page.waitForTimeout(2_000); // let welcome bubble + suggestion chips stage in
-    await page.screenshot({ path: shot("06-board-chat.png") });
-
-    // ── Section D: Artifacts ──────────────────────────────────────────────
+    // ── Section C: Evidence Packages ──────────────────────────────────────
     await page.goto(`/${prefix}/artifacts`);
     await expect(page).toHaveURL(new RegExp(`/${prefix}/artifacts`));
     await page.waitForLoadState("networkidle");
@@ -158,7 +140,6 @@ test.describe("NUX Phase 4 visual QA", () => {
       "03-create-mission.png",
       "04-hire-team-lead.png",
       "05-growth-intake.png",
-      "06-board-chat.png",
       "07-artifacts.png",
     ]) {
       const p = shot(f);

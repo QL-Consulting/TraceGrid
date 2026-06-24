@@ -1768,7 +1768,7 @@ function IssueChatAssistantMessage({
               </Badge>
             ) : null}
           </div>
-          {/* Canonical conference-room agent bubble (BoardChat.tsx:712). */}
+          {/* Canonical collection-agent bubble. */}
           <div
             className={cn(
               "min-w-0 break-words px-3 py-2 text-sm overflow-x-auto overflow-y-visible [border-radius:14px_14px_14px_4px]",

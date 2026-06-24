@@ -74,7 +74,7 @@ export function NewAgentDialog() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch existing agents for the "Ask CEO" flow
+  // Fetch existing agents for the coordinator-request flow.
   const { data: agents } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
     queryFn: () => agentsApi.list(selectedCompanyId!),
@@ -119,8 +119,8 @@ export function NewAgentDialog() {
     closeNewAgent();
     openNewIssue({
       assigneeAgentId: ceoAgent?.id,
-      title: "Create a new agent",
-      description: "(type in what kind of agent you want here)",
+      title: "Create a new collection agent",
+      description: "(describe the source-specialized collection agent you need here)",
     });
   }
 
@@ -199,14 +199,14 @@ export function NewAgentDialog() {
 
       await queryClient.invalidateQueries({ queryKey: inviteHistoryQueryKey });
       pushToast({
-        title: "Agent invite created",
-        body: copied ? "Agent onboarding prompt ready below and copied to clipboard." : "Agent onboarding prompt ready below.",
+        title: "Collection agent invite created",
+        body: copied ? "Collection agent onboarding prompt ready below and copied to clipboard." : "Collection agent onboarding prompt ready below.",
         tone: "success",
       });
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to create agent invite",
+        title: "Failed to create collection agent invite",
         body: error instanceof Error ? error.message : "Unknown error",
         tone: "error",
       });
@@ -232,7 +232,7 @@ export function NewAgentDialog() {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
-          <span className="text-sm text-muted-foreground">Add a new agent</span>
+          <span className="text-sm text-muted-foreground">Add a new collection agent</span>
           <Button
             variant="ghost"
             size="icon-xs"
@@ -255,14 +255,14 @@ export function NewAgentDialog() {
                   <Bot className="h-6 w-6 text-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Ask a leader to propose the hire, configure a runtime yourself,
-                  or send an onboarding prompt to an external agent.
+                  Request a coordinator-created collection agent, configure a runtime yourself,
+                  or send an onboarding prompt to an external collection agent.
                 </p>
               </div>
 
               <Button className="w-full" size="lg" onClick={handleAskCeo}>
                 <Bot className="h-4 w-4 mr-2" />
-                Ask the CEO to create a new agent
+                Request a new collection agent
               </Button>
 
               <div className="grid gap-2">
@@ -273,10 +273,10 @@ export function NewAgentDialog() {
                 <div className="space-y-1">
                   <Button variant="outline" className="w-full" onClick={handleInviteExternalAgent}>
                     <MailPlus className="h-4 w-4 mr-2" />
-                    Invite an external agent
+                    Invite an external collection agent
                   </Button>
                   <p className="text-xs text-muted-foreground text-center">
-                    (OpenClaw, Hermes, or any agent that can call the invite API.)
+                    (OpenClaw, Hermes, or any runtime that can call the invite API.)
                   </p>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export function NewAgentDialog() {
                   Back
                 </button>
                 <p className="text-sm text-muted-foreground">
-                  Choose the runtime Paperclip should start or resume directly.
+                  Choose the runtime TraceGrid should start or resume directly.
                 </p>
               </div>
 
@@ -335,15 +335,15 @@ export function NewAgentDialog() {
                   Back
                 </button>
                 <div className="space-y-1">
-                  <h2 className="text-sm font-semibold">Invite an external agent</h2>
+                  <h2 className="text-sm font-semibold">Invite an external collection agent</h2>
                   <p className="text-sm text-muted-foreground">
-                    Generate a one-time onboarding prompt that any compatible agent can use to request access, wait for approval, and claim its Paperclip API key.
+                    Generate a one-time onboarding prompt that any compatible collection agent can use to request access, wait for approval, and claim its TraceGrid API key.
                   </p>
                 </div>
               </div>
 
               <label className="block space-y-2">
-                <span className="text-sm font-medium">Optional message for the agent</span>
+                <span className="text-sm font-medium">Optional message for the collection agent</span>
                 <Textarea
                   value={agentMessage}
                   onChange={(event) => setAgentMessage(event.target.value)}
@@ -354,7 +354,7 @@ export function NewAgentDialog() {
               </label>
 
               <div className="rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground">
-                Agent invites create a join request first. A company admin still approves the request before the agent can claim its API key.
+                Collection agent invites create a join request first. A collection network admin still approves the request before the agent can claim its API key.
               </div>
 
               <div>
@@ -378,7 +378,7 @@ export function NewAgentDialog() {
                 </button>
                 <div className="space-y-1">
                   <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-sm font-semibold">Agent onboarding prompt</h2>
+                    <h2 className="text-sm font-semibold">Collection agent onboarding prompt</h2>
                     {latestAgentPromptCopied ? (
                       <div className="inline-flex items-center gap-1 text-xs font-medium text-foreground">
                         <Check className="h-3.5 w-3.5" />
@@ -387,7 +387,7 @@ export function NewAgentDialog() {
                     ) : null}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Send this prompt to the external agent that should join this company.
+                    Send this prompt to the external collection agent that should join this collection network.
                   </p>
                 </div>
               </div>

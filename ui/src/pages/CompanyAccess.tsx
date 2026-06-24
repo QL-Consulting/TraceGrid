@@ -42,7 +42,7 @@ export function CompanyAccess() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
+      { label: selectedCompany?.name ?? "Collection Network", href: "/dashboard" },
       { label: "Settings", href: "/company/settings" },
       { label: "Members" },
     ]);
@@ -175,7 +175,7 @@ export function CompanyAccess() {
         title: "Member removed",
         body:
           result.reassignedIssueCount > 0
-            ? `${result.reassignedIssueCount} assigned task${result.reassignedIssueCount === 1 ? "" : "s"} cleaned up.`
+            ? `${result.reassignedIssueCount} assigned collection job${result.reassignedIssueCount === 1 ? "" : "s"} cleaned up.`
             : undefined,
         tone: "success",
       });
@@ -201,20 +201,20 @@ export function CompanyAccess() {
   }, [removingMember]);
 
   if (!selectedCompanyId) {
-    return <div className="text-sm text-muted-foreground">Select a company to manage access.</div>;
+    return <div className="text-sm text-muted-foreground">Select a collection network to manage access.</div>;
   }
 
   if (membersQuery.isLoading) {
-    return <div className="text-sm text-muted-foreground">Loading company access…</div>;
+    return <div className="text-sm text-muted-foreground">Loading collection network access…</div>;
   }
 
   if (membersQuery.error) {
     const message =
       membersQuery.error instanceof ApiError && membersQuery.error.status === 403
-        ? "You do not have permission to manage company members."
+        ? "You do not have permission to manage collection network members."
         : membersQuery.error instanceof Error
           ? membersQuery.error.message
-          : "Failed to load company members.";
+          : "Failed to load collection network members.";
     return <div className="text-sm text-destructive">{message}</div>;
   }
 
@@ -238,10 +238,10 @@ export function CompanyAccess() {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-lg font-semibold">Company Members</h1>
+          <h1 className="text-lg font-semibold">Collection Network Members</h1>
         </div>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Manage the people who can work in {selectedCompany?.name}. Members can collaborate across the company by default.
+          Manage the people who can work in {selectedCompany?.name}. Members can collaborate across the collection network by default.
         </p>
         <div className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
           Core keeps this page focused on membership, invite approvals, and safe member removal.
@@ -250,7 +250,7 @@ export function CompanyAccess() {
 
       {access && !access.currentUserRole && (
         <div className="rounded-xl border border-amber-500/40 px-4 py-3 text-sm text-amber-200">
-          This account can manage access here through instance-admin privileges, but it does not currently hold an active company membership.
+          This account can manage access here through instance-admin privileges, but it does not currently hold an active collection network membership.
         </div>
       )}
 
@@ -261,7 +261,7 @@ export function CompanyAccess() {
             <h2 className="text-base font-semibold">Humans</h2>
           </div>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Manage human company memberships and status here.
+            Manage human collection network memberships and status here.
           </p>
         </div>
 
@@ -271,7 +271,7 @@ export function CompanyAccess() {
               <div>
                 <h3 className="text-sm font-semibold">Pending human joins</h3>
                 <p className="text-sm text-muted-foreground">
-                  Review pending join requests before they become active company members.
+                  Review pending join requests before they become active collection network members.
                 </p>
               </div>
               <Badge variant="outline">{pendingHumanJoinRequests.length} pending</Badge>
@@ -317,7 +317,7 @@ export function CompanyAccess() {
             <div className="text-right">Action</div>
           </div>
           {members.length === 0 ? (
-            <div className="px-4 py-8 text-sm text-muted-foreground">No user memberships found for this company yet.</div>
+            <div className="px-4 py-8 text-sm text-muted-foreground">No user memberships found for this collection network yet.</div>
           ) : (
             members.map((member) => {
               const removalReason = member.removal?.reason ?? null;
@@ -373,14 +373,14 @@ export function CompanyAccess() {
           <DialogHeader>
             <DialogTitle>Edit member</DialogTitle>
             <DialogDescription>
-              Update company role and membership status for {editingMember?.user?.name || editingMember?.user?.email || editingMember?.principalId}.
+              Update collection network role and membership status for {editingMember?.user?.name || editingMember?.user?.email || editingMember?.principalId}.
             </DialogDescription>
           </DialogHeader>
           {editingMember && (
             <div className="space-y-5">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="space-y-2 text-sm">
-                  <span className="font-medium">Company role</span>
+                  <span className="font-medium">Collection network role</span>
                   <select
                     className="w-full rounded-md border border-border bg-background px-3 py-2"
                     value={draftRole ?? ""}
@@ -449,14 +449,14 @@ export function CompanyAccess() {
                 <div className="text-sm text-muted-foreground">{removingMember.user?.email || removingMember.principalId}</div>
                 <div className="mt-2 text-sm text-muted-foreground">
                   {assignedIssuesQuery.isLoading
-                    ? "Checking assigned tasks..."
-                    : `${assignedIssues.length} open assigned task${assignedIssues.length === 1 ? "" : "s"}`}
+                    ? "Checking assigned collection jobs..."
+                    : `${assignedIssues.length} open assigned collection job${assignedIssues.length === 1 ? "" : "s"}`}
                 </div>
               </div>
 
               {assignedIssues.length > 0 ? (
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Task reassignment</div>
+                  <div className="text-sm font-medium">Collection job reassignment</div>
                   <select
                     className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                     value={reassignmentTarget}
@@ -473,7 +473,7 @@ export function CompanyAccess() {
                       </optgroup>
                     ) : null}
                     {activeReassignmentAgents.length > 0 ? (
-                      <optgroup label="Agents">
+                      <optgroup label="Collection agents">
                         {activeReassignmentAgents.map((agent) => (
                           <option key={agent.id} value={`agent:${agent.id}`}>
                             {agent.name} ({agent.role})
@@ -491,7 +491,7 @@ export function CompanyAccess() {
                     ))}
                     {assignedIssues.length > 6 ? (
                       <div className="px-3 py-2 text-sm text-muted-foreground">
-                        {assignedIssues.length - 6} more task{assignedIssues.length - 6 === 1 ? "" : "s"}
+                        {assignedIssues.length - 6} more collection job{assignedIssues.length - 6 === 1 ? "" : "s"}
                       </div>
                     ) : null}
                   </div>
@@ -556,7 +556,7 @@ export function CompanyAccessLegacyRoute() {
           <h1 className="text-lg font-semibold">Advanced Permissions</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Advanced access, scoped assignment, and explicit grant controls are provided by installed company settings extensions.
+          Advanced access, scoped assignment, and explicit grant controls are provided by installed collection network settings extensions.
         </p>
       </div>
 
@@ -564,7 +564,7 @@ export function CompanyAccessLegacyRoute() {
         <div className="space-y-2">
           <h2 className="text-sm font-semibold">Advanced permissions unavailable</h2>
           <p className="text-sm text-muted-foreground">
-            Core Paperclip keeps enforcing company boundaries and any existing restrictive policy data, but editing advanced permissions requires an installed extension.
+            TraceGrid keeps enforcing collection network boundaries and any existing restrictive policy data, but editing advanced permissions requires an installed extension.
           </p>
           {errorMessage ? (
             <p className="text-sm text-destructive">Plugin extensions unavailable: {errorMessage}</p>

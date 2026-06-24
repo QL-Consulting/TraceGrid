@@ -90,6 +90,9 @@ export const queryKeys = {
     liveRuns: (issueId: string) => ["issues", "live-runs", issueId] as const,
     activeRun: (issueId: string) => ["issues", "active-run", issueId] as const,
     workProducts: (issueId: string) => ["issues", "work-products", issueId] as const,
+    evidencePackages: (collectionJobId: string) => ["collection-jobs", collectionJobId, "evidence-packages"] as const,
+    directiveEvidencePackages: (collectionDirectiveId: string) =>
+      ["collection-directives", collectionDirectiveId, "evidence-packages"] as const,
     fileResources: (
       issueId: string,
       options: {

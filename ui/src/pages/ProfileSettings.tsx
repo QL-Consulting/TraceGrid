@@ -86,7 +86,7 @@ export function ProfileSettings() {
   const uploadAvatarMutation = useMutation({
     mutationFn: async (file: File) => {
       if (!selectedCompanyId) {
-        throw new Error("Select a company before uploading a profile avatar.");
+        throw new Error("Select a collection network before uploading a profile avatar.");
       }
 
       const asset = await assetsApi.uploadImage(
@@ -135,8 +135,8 @@ export function ProfileSettings() {
   const initials = deriveInitials(currentName);
   const isSavingProfile = updateMutation.isPending || uploadAvatarMutation.isPending || removeAvatarMutation.isPending;
   const uploadHint = selectedCompany
-    ? `Stored in Paperclip file storage for ${selectedCompany.name}.`
-    : "Select a company to upload an avatar into Paperclip storage.";
+    ? `Stored in TraceGrid file storage for ${selectedCompany.name}.`
+    : "Select a collection network to upload an avatar into TraceGrid storage.";
 
   return (
     <div className="max-w-4xl space-y-6">

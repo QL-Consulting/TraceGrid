@@ -1,4 +1,14 @@
-# Paperclip
+# Paperclip / TraceGrid
+
+## TraceGrid Direction
+
+This fork is being refactored into **TraceGrid**.
+
+TraceGrid is an **Evidence Intelligence Platform**: a source-specialized collection and retrieval system that transforms uncertainty into defensible confidence through a structured, repeatable, and auditable epistemological workflow. Axiom Forge sends collection directives to TraceGrid; TraceGrid decomposes them into source-specific collection jobs, assigns isolated collection agents, normalizes and deduplicates the resulting evidence, and returns Evidence Packages / Weighted Evidence Products to Axiom Forge.
+
+TraceGrid does **not** synthesize final reports, make final analytical judgments, determine truth, recommend actions, or communicate directly with human end users. Axiom Forge performs fusion, validation, contextualization, gap analysis, confidence reassessment, and validated understanding. StratSight governs whether confidence is sufficient for decision support.
+
+TraceGrid's default product-facing tenant term is **Collection Cell**. Intelligence Cell and Mission Cell are acceptable context-specific synonyms, while Collection Network remains a higher-level compatibility grouping for distributed or multi-cell structures.
 
 **Paperclip is the backbone of the autonomous economy.** We are building the infrastructure that autonomous AI companies run on. Our goal is for Paperclip-powered companies to collectively generate economic output that rivals the GDP of the world's largest countries. Every decision we make should serve that: make autonomous companies more capable, more governable, more scalable, and more real.
 

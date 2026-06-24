@@ -243,7 +243,7 @@ export function UserProfile() {
   );
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={UserRound} message="Select a company to view user profiles." />;
+    return <EmptyState icon={UserRound} message="Select a collection network to view user profiles." />;
   }
 
   if (isLoading) {
@@ -251,7 +251,7 @@ export function UserProfile() {
   }
 
   if (error || !data) {
-    return <EmptyState icon={AlertCircle} message="User profile not found for this company." />;
+    return <EmptyState icon={AlertCircle} message="User profile not found for this collection network." />;
   }
 
   const allTimeTokens = allTime ? totalTokens(allTime) : 0;

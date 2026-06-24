@@ -73,6 +73,34 @@ export const AGENT_ROLE_LABELS: Record<AgentRole, string> = {
   general: "General",
 };
 
+export const TRACEGRID_SOURCE_TYPES = [
+  "web",
+  "news_rss",
+  "reddit_forum",
+  "youtube_transcript",
+  "document_pdf",
+] as const;
+export type TraceGridSourceType = (typeof TRACEGRID_SOURCE_TYPES)[number];
+
+export const TRACEGRID_SOURCE_TYPE_LABELS: Record<TraceGridSourceType, string> = {
+  web: "Web",
+  news_rss: "News/RSS",
+  reddit_forum: "Reddit/Forum",
+  youtube_transcript: "YouTube/Transcript",
+  document_pdf: "Document/PDF",
+};
+
+export const TRACEGRID_ROLE_TYPES = [
+  "tracegrid_coordinator",
+  "collection_agent",
+] as const;
+export type TraceGridRoleType = (typeof TRACEGRID_ROLE_TYPES)[number];
+
+export const TRACEGRID_ROLE_LABELS: Record<TraceGridRoleType, string> = {
+  tracegrid_coordinator: "TraceGrid Coordinator",
+  collection_agent: "Collection Agent",
+};
+
 export const AGENT_DEFAULT_MAX_CONCURRENT_RUNS = 20;
 export const WORKSPACE_BRANCH_ROUTINE_VARIABLE = "workspaceBranch";
 

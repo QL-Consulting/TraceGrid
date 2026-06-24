@@ -236,7 +236,7 @@ export function RoutineDetail() {
   });
   const createSecret = useMutation({
     mutationFn: (input: { name: string; value: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to create secrets");
+      if (!selectedCompanyId) throw new Error("Select a collection network to create secrets");
       return secretsApi.create(selectedCompanyId, input);
     },
     onSuccess: () => {
@@ -273,7 +273,7 @@ export function RoutineDetail() {
       result.push({ key: "projectId", label: "the project" });
     }
     if (editDraft.assigneeAgentId !== routineDefaults.assigneeAgentId) {
-      result.push({ key: "assigneeAgentId", label: "the default agent" });
+      result.push({ key: "assigneeAgentId", label: "the default collection agent" });
     }
     if (editDraft.priority !== routineDefaults.priority) {
       result.push({ key: "priority", label: "the priority" });
@@ -390,7 +390,7 @@ export function RoutineDetail() {
       }
       pushToast({
         title: "Failed to save routine",
-        body: mutationError instanceof Error ? mutationError.message : "Paperclip could not save the routine.",
+        body: mutationError instanceof Error ? mutationError.message : "TraceGrid could not save the routine.",
         tone: "error",
       });
     },
@@ -424,7 +424,7 @@ export function RoutineDetail() {
     onError: (runError) => {
       pushToast({
         title: "Routine run failed",
-        body: runError instanceof Error ? runError.message : "Paperclip could not start the routine run.",
+        body: runError instanceof Error ? runError.message : "TraceGrid could not start the routine run.",
         tone: "error",
       });
     },
@@ -446,7 +446,7 @@ export function RoutineDetail() {
     onError: (statusError) => {
       pushToast({
         title: "Failed to update routine",
-        body: statusError instanceof Error ? statusError.message : "Paperclip could not update the routine.",
+        body: statusError instanceof Error ? statusError.message : "TraceGrid could not update the routine.",
         tone: "error",
       });
     },
@@ -485,7 +485,7 @@ export function RoutineDetail() {
     onError: (triggerError) => {
       pushToast({
         title: "Failed to add trigger",
-        body: triggerError instanceof Error ? triggerError.message : "Paperclip could not create the trigger.",
+        body: triggerError instanceof Error ? triggerError.message : "TraceGrid could not create the trigger.",
         tone: "error",
       });
     },
@@ -504,7 +504,7 @@ export function RoutineDetail() {
     onError: (triggerError) => {
       pushToast({
         title: "Failed to update trigger",
-        body: triggerError instanceof Error ? triggerError.message : "Paperclip could not update the trigger.",
+        body: triggerError instanceof Error ? triggerError.message : "TraceGrid could not update the trigger.",
         tone: "error",
       });
     },
@@ -523,7 +523,7 @@ export function RoutineDetail() {
     onError: (triggerError) => {
       pushToast({
         title: "Failed to delete trigger",
-        body: triggerError instanceof Error ? triggerError.message : "Paperclip could not delete the trigger.",
+        body: triggerError instanceof Error ? triggerError.message : "TraceGrid could not delete the trigger.",
         tone: "error",
       });
     },
@@ -544,7 +544,7 @@ export function RoutineDetail() {
     onError: (triggerError) => {
       pushToast({
         title: "Failed to rotate webhook secret",
-        body: triggerError instanceof Error ? triggerError.message : "Paperclip could not rotate the webhook secret.",
+        body: triggerError instanceof Error ? triggerError.message : "TraceGrid could not rotate the webhook secret.",
         tone: "error",
       });
     },
@@ -650,7 +650,7 @@ export function RoutineDetail() {
   );
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Repeat} message="Select a company to view routines." />;
+    return <EmptyState icon={Repeat} message="Select a collection network to view routines." />;
   }
 
   // Back-compat redirect: `?tab=x` → `/routines/:id/x`.
@@ -721,8 +721,8 @@ export function RoutineDetail() {
     onToggleAutomation: () => {
       if (!automationEnabled && !routine.assigneeAgentId) {
         pushToast({
-          title: "Default agent required",
-          body: "Set a default agent before enabling routine automation.",
+          title: "Default collection agent required",
+          body: "Set a default collection agent before enabling routine automation.",
           tone: "warn",
         });
         return;

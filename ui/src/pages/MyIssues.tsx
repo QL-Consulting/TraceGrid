@@ -27,7 +27,7 @@ export function MyIssues() {
   });
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={ListTodo} message="Select a company to view your tasks." />;
+    return <EmptyState icon={ListTodo} message="Select a collection network to view your collection jobs." />;
   }
 
   if (isLoading) {

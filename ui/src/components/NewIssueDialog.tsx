@@ -1,6 +1,10 @@
 import { memo, useState, useEffect, useRef, useCallback, useMemo, type ChangeEvent, type CSSProperties, type DragEvent, type RefObject } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { IssueWorkMode } from "@paperclipai/shared";
+import {
+  TRACEGRID_SOURCE_TYPES,
+  TRACEGRID_SOURCE_TYPE_LABELS,
+  type IssueWorkMode,
+} from "@paperclipai/shared";
 import { pickTextColorForSolidBg } from "@/lib/color-contrast";
 import { useDialog } from "../context/DialogContext";
 import { useCompany } from "../context/CompanyContext";
@@ -89,6 +93,7 @@ interface IssueDraft {
   watchdogAgentId?: string;
   watchdogInstructions?: string;
   assigneeId?: string;
+  collectionSourceType?: string;
   projectId: string;
   projectWorkspaceId?: string;
   assigneeModelLane?: IssueModelLane;
@@ -315,7 +320,7 @@ const IssueTitleTextarea = memo(function IssueTitleTextarea({
   return (
     <textarea
       className="w-full text-lg font-semibold bg-transparent outline-none resize-none overflow-hidden placeholder:text-muted-foreground/50"
-      placeholder="Task title"
+      placeholder="Collection job title"
       rows={1}
       value={draftValue}
       onChange={(e) => {
@@ -430,6 +435,7 @@ export function NewIssueDialog() {
   const [watchdogEditorOpen, setWatchdogEditorOpen] = useState(false);
   const [participantMenuOpen, setParticipantMenuOpen] = useState(false);
   const [projectId, setProjectId] = useState("");
+  const [collectionSourceType, setCollectionSourceType] = useState("");
   const [projectWorkspaceId, setProjectWorkspaceId] = useState("");
   const [assigneeOptionsOpen, setAssigneeOptionsOpen] = useState(false);
   const [assigneeModelLane, setAssigneeModelLane] = useState<IssueModelLane>("primary");
@@ -459,6 +465,7 @@ export function NewIssueDialog() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [workModeOpen, setWorkModeOpen] = useState(false);
+  const [sourceTypeOpen, setSourceTypeOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
   const descriptionEditorRef = useRef<MarkdownEditorRef>(null);
@@ -617,7 +624,7 @@ export function NewIssueDialog() {
 
   const uploadDescriptionImage = useMutation({
     mutationFn: async (file: File) => {
-      if (!effectiveCompanyId) throw new Error("No company selected");
+      if (!effectiveCompanyId) throw new Error("No collection network selected");
       return assetsApi.uploadImage(effectiveCompanyId, file, "issues/drafts");
     },
   });
@@ -660,6 +667,7 @@ export function NewIssueDialog() {
       approverValue,
       watchdogAgentId,
       watchdogInstructions,
+      collectionSourceType,
       projectId,
       projectWorkspaceId,
       assigneeModelLane,
@@ -680,6 +688,7 @@ export function NewIssueDialog() {
     approverValue,
     watchdogAgentId,
     watchdogInstructions,
+    collectionSourceType,
     projectId,
     projectWorkspaceId,
     assigneeModelOverride,
@@ -758,6 +767,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(defaultProjectWorkspaceId);
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setAssigneeModelLane("primary");
       setAssigneeModelOverride("");
       setAssigneeThinkingEffort("");
@@ -779,6 +789,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(newIssueDefaults.projectWorkspaceId ?? defaultProjectWorkspaceIdForProject(defaultProject));
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setReviewerValue("");
       setApproverValue("");
       setShowReviewerRow(false);
@@ -818,6 +829,7 @@ export function NewIssueDialog() {
       setWatchdogInstructions(draft.watchdogInstructions ?? "");
       setShowWatchdogRow(!!(draft.watchdogAgentId));
       setProjectId(restoredProjectId);
+      setCollectionSourceType(draft.collectionSourceType ?? "");
       setProjectWorkspaceId(
         hasExplicitProjectWorkspaceId
           ? (newIssueDefaults.projectWorkspaceId ?? "")
@@ -855,6 +867,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(newIssueDefaults.projectWorkspaceId ?? defaultProjectWorkspaceIdForProject(defaultProject));
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setReviewerValue("");
       setApproverValue("");
       setShowReviewerRow(false);
@@ -922,6 +935,7 @@ export function NewIssueDialog() {
     setWatchdogAgentId("");
     setWatchdogInstructions("");
     setShowWatchdogRow(false);
+    setCollectionSourceType("");
     setProjectId("");
     setProjectWorkspaceId("");
     setAssigneeOptionsOpen(false);
@@ -953,6 +967,7 @@ export function NewIssueDialog() {
     setWatchdogAgentId("");
     setWatchdogInstructions("");
     setShowWatchdogRow(false);
+    setCollectionSourceType("");
     setProjectId("");
     setProjectWorkspaceId("");
     setAssigneeModelLane("primary");
@@ -1013,6 +1028,7 @@ export function NewIssueDialog() {
       status,
       priority: priority || "medium",
       workMode,
+      ...(effectiveCollectionSourceType ? { collectionSourceType: effectiveCollectionSourceType } : {}),
       ...(selectedAssigneeAgentId ? { assigneeAgentId: selectedAssigneeAgentId } : {}),
       ...(selectedAssigneeUserId ? { assigneeUserId: selectedAssigneeUserId } : {}),
       ...(newIssueDefaults.parentId ? { parentId: newIssueDefaults.parentId } : {}),
@@ -1113,6 +1129,7 @@ export function NewIssueDialog() {
   const currentAssignee = selectedAssigneeAgentId
     ? (agents ?? []).find((a) => a.id === selectedAssigneeAgentId)
     : null;
+  const effectiveCollectionSourceType = collectionSourceType || currentAssignee?.collectionSourceType || "";
   const currentAssigneeLowTrust = getTrustPreset(currentAssignee?.permissions) === "low_trust_review";
   const currentProject = orderedProjects.find((project) => project.id === projectId);
   const currentProjectExecutionWorkspacePolicy =
@@ -1141,7 +1158,7 @@ export function NewIssueDialog() {
         ? "Codex options"
         : assigneeAdapterType === "opencode_local"
           ? "OpenCode options"
-        : "Agent options";
+        : "Collection agent options";
   const thinkingEffortOptions =
     assigneeAdapterType === "codex_local"
       ? ISSUE_THINKING_EFFORT_OPTIONS.codex_local
@@ -1195,7 +1212,7 @@ export function NewIssueDialog() {
   const hasSavedDraft = Boolean(savedDraft?.title.trim() || savedDraft?.description.trim());
   const canDiscardDraft = hasDraft || hasSavedDraft;
   const createIssueErrorMessage =
-    createIssue.error instanceof Error ? createIssue.error.message : "Failed to create task. Try again.";
+    createIssue.error instanceof Error ? createIssue.error.message : "Failed to create collection job. Try again.";
   const stagedDocuments = stagedFiles.filter((file) => file.kind === "document");
   const stagedAttachments = stagedFiles.filter((file) => file.kind === "attachment");
 
@@ -1344,7 +1361,7 @@ export function NewIssueDialog() {
               </PopoverContent>
             </Popover>
             <span className="text-muted-foreground/60">&rsaquo;</span>
-            <span>{isSubIssueMode ? "New sub-task" : "New task"}</span>
+            <span>{isSubIssueMode ? "New sub-job" : "New collection job"}</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -1439,7 +1456,7 @@ export function NewIssueDialog() {
                       {assignee ? <AgentIcon icon={assignee.icon} className="h-3.5 w-3.5 shrink-0 text-muted-foreground" /> : null}
                       <span className="truncate">{option.label}</span>
                       {assignee && getTrustPreset(assignee.permissions) === "low_trust_review" ? (
-                        <ShieldAlert className="ml-auto h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" aria-label="Low-trust review agent" />
+                        <ShieldAlert className="ml-auto h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-300" aria-label="Low-trust review collection agent" />
                       ) : null}
                     </>
                   );
@@ -1487,6 +1504,48 @@ export function NewIssueDialog() {
                   );
                 }}
               />
+              <Popover open={sourceTypeOpen} onOpenChange={setSourceTypeOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs hover:bg-accent/50 transition-colors"
+                    title="Collection source type"
+                  >
+                    {effectiveCollectionSourceType
+                      ? TRACEGRID_SOURCE_TYPE_LABELS[effectiveCollectionSourceType as keyof typeof TRACEGRID_SOURCE_TYPE_LABELS]
+                      : "Any source"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-1" align="start">
+                  <button
+                    className={cn(
+                      "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                      !collectionSourceType && !currentAssignee?.collectionSourceType && "bg-accent",
+                    )}
+                    onClick={() => {
+                      setCollectionSourceType("");
+                      setSourceTypeOpen(false);
+                    }}
+                  >
+                    Any source
+                  </button>
+                  {TRACEGRID_SOURCE_TYPES.map((sourceType) => (
+                    <button
+                      key={sourceType}
+                      className={cn(
+                        "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                        sourceType === effectiveCollectionSourceType && "bg-accent",
+                      )}
+                      onClick={() => {
+                        setCollectionSourceType(sourceType);
+                        setSourceTypeOpen(false);
+                      }}
+                    >
+                      {TRACEGRID_SOURCE_TYPE_LABELS[sourceType]}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
 
               {/* Three-dot menu to add Reviewer / Approver rows */}
               <Popover open={participantMenuOpen} onOpenChange={setParticipantMenuOpen}>
@@ -1676,10 +1735,10 @@ export function NewIssueDialog() {
                       <InlineEntitySelector
                         value={watchdogAgentId}
                         options={watchdogAgentOptions}
-                        placeholder="Select agent"
-                        noneLabel="No watchdog agent"
-                        searchPlaceholder="Search agents..."
-                        emptyMessage="No agents found."
+                        placeholder="Select collection agent"
+                        noneLabel="No watchdog collection agent"
+                        searchPlaceholder="Search collection agents..."
+                        emptyMessage="No collection agents found."
                         onChange={setWatchdogAgentId}
                         renderTriggerValue={(option) =>
                           option ? (
@@ -1690,7 +1749,7 @@ export function NewIssueDialog() {
                               <span className="truncate">{option.label}</span>
                             </>
                           ) : (
-                            <span className="text-muted-foreground">Select agent</span>
+                            <span className="text-muted-foreground">Select collection agent</span>
                           )
                         }
                         renderOption={(option) => {
@@ -1742,7 +1801,7 @@ export function NewIssueDialog() {
             <div className="max-w-full rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <ListTree className="h-3.5 w-3.5 shrink-0" />
-                <span className="shrink-0">Sub-task of</span>
+                <span className="shrink-0">Sub-job of</span>
                 <span className="font-medium text-foreground">{parentIssueLabel}</span>
               </div>
               {newIssueDefaults.parentTitle ? (
@@ -1798,7 +1857,7 @@ export function NewIssueDialog() {
               )}
               {showParentWorkspaceWarning ? (
                 <div className="rounded-md border border-amber-300/60 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-900 dark:border-amber-800/70 dark:bg-amber-950/30 dark:text-amber-100">
-                  Warning: this sub-task will no longer use the parent task workspace{parentExecutionWorkspaceLabel ? ` (${parentExecutionWorkspaceLabel})` : ""}.
+                  Warning: this sub-job will no longer use the parent collection job workspace{parentExecutionWorkspaceLabel ? ` (${parentExecutionWorkspaceLabel})` : ""}.
                 </div>
               ) : null}
             </div>
@@ -2242,7 +2301,7 @@ export function NewIssueDialog() {
             >
               <span className="inline-flex items-center justify-center gap-1.5">
                 {createIssue.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-                <span>{createIssue.isPending ? "Creating..." : isSubIssueMode ? "Create Sub-Task" : "Create Task"}</span>
+                <span>{createIssue.isPending ? "Creating..." : isSubIssueMode ? "Create Sub-Job" : "Create Collection Job"}</span>
               </span>
             </Button>
           </div>

@@ -99,7 +99,7 @@ export function GoalDetail() {
 
   const uploadImage = useMutation({
     mutationFn: async (file: File) => {
-      if (!resolvedCompanyId) throw new Error("No company selected");
+      if (!resolvedCompanyId) throw new Error("No collection network selected");
       return assetsApi.uploadImage(
         resolvedCompanyId,
         file,
@@ -118,8 +118,8 @@ export function GoalDetail() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Goals", href: "/goals" },
-      { label: goal?.title ?? goalId ?? "Goal" }
+      { label: "Collection Directives", href: "/goals" },
+      { label: goal?.title ?? goalId ?? "Collection Directive" }
     ]);
   }, [setBreadcrumbs, goal, goalId]);
 
@@ -179,7 +179,7 @@ export function GoalDetail() {
       <Tabs defaultValue="children">
         <TabsList>
           <TabsTrigger value="children">
-            Sub-Goals ({childGoals.length})
+            Sub-directives ({childGoals.length})
           </TabsTrigger>
           <TabsTrigger value="projects">
             Projects ({linkedProjects.length})
@@ -194,11 +194,11 @@ export function GoalDetail() {
               onClick={() => openNewGoal({ parentId: goalId })}
             >
               <Plus className="h-3.5 w-3.5 mr-1.5" />
-              Sub Goal
+              Sub-directive
             </Button>
           </div>
           {childGoals.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No sub-goals.</p>
+            <p className="text-sm text-muted-foreground">No sub-directives.</p>
           ) : (
             <GoalTree goals={childGoals} goalLink={(g) => `/goals/${g.id}`} />
           )}

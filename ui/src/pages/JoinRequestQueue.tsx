@@ -20,7 +20,7 @@ export function JoinRequestQueue() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
+      { label: selectedCompany?.name ?? "Collection Network", href: "/dashboard" },
       { label: "Inbox", href: "/inbox" },
       { label: "Join Requests" },
     ]);
@@ -56,7 +56,7 @@ export function JoinRequestQueue() {
   });
 
   if (!selectedCompanyId) {
-    return <div className="text-sm text-muted-foreground">Select a company to review join requests.</div>;
+    return <div className="text-sm text-muted-foreground">Select a collection network to review join requests.</div>;
   }
 
   if (requestsQuery.isLoading) {
@@ -66,7 +66,7 @@ export function JoinRequestQueue() {
   if (requestsQuery.error) {
     const message =
       requestsQuery.error instanceof ApiError && requestsQuery.error.status === 403
-        ? "You do not have permission to review join requests for this company."
+        ? "You do not have permission to review join requests for this collection network."
         : requestsQuery.error instanceof Error
           ? requestsQuery.error.message
           : "Failed to load join requests.";
@@ -81,7 +81,7 @@ export function JoinRequestQueue() {
           <h1 className="text-lg font-semibold">Join Request Queue</h1>
         </div>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Review human and agent join requests outside the mixed inbox feed. This queue uses the same approval mutations as the inline inbox cards.
+          Review human and collection agent join requests outside the mixed inbox feed. This queue uses the same approval mutations as the inline inbox cards.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export function JoinRequestQueue() {
           >
             <option value="all">All</option>
             <option value="human">Human</option>
-            <option value="agent">Agent</option>
+            <option value="agent">Collection agent</option>
           </select>
         </label>
       </div>
@@ -137,7 +137,7 @@ export function JoinRequestQueue() {
                     <div className="text-base font-medium">
                       {request.requestType === "human"
                         ? request.requesterUser?.name || request.requestEmailSnapshot || request.requestingUserId || "Unknown human requester"
-                        : request.agentName || "Unknown agent requester"}
+                        : request.agentName || "Unknown collection agent requester"}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {request.requestType === "human"

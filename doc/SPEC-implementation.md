@@ -1,4 +1,44 @@
-# Paperclip V1 Implementation Spec
+# Paperclip / TraceGrid Implementation Spec
+
+## TraceGrid Refactor Addendum
+
+This fork is being refactored into **TraceGrid**, a source-specialized evidence collection and retrieval system. During the transition, legacy Paperclip table names and REST routes may remain as compatibility internals; externally visible behavior should move toward TraceGrid terminology and contracts.
+
+TraceGrid hard rules:
+
+- No agent-to-agent communication.
+- No final analysis.
+- No conclusions, recommendations, or analytical judgments.
+- No human-facing report generation.
+- Axiom Forge is the only system allowed to interpret or synthesize.
+- TraceGrid only collects, normalizes, deduplicates, retrieves, and packages evidence.
+
+TraceGrid terminology:
+
+- Company/team → Collection Cell (Collection Network remains a compatibility/higher-level grouping term)
+- Agent → Collection Agent
+- Manager/CEO → TraceGrid Coordinator
+- Task/Issue → Collection Job
+- Goal → Collection Directive
+- Report/work product → Evidence Package
+
+Every Evidence Package uses the shared Evidence Schema with `source_type`, `source_name`, `url`, `title`, `author`, `published_at`, `retrieved_at`, `raw_text`, `media_urls`, `metadata`, `collection_agent`, `collection_job_id`, `confidence`, and `limitations`.
+
+TraceGrid MVP Epistemological Methodology v0.1:
+
+1. Observe Environment (`observe_environment`, 13.32%)
+2. Collect Signals (`collect_signals`, 19.39%)
+3. Filter Noise (`filter_noise`, 10.77%)
+4. Corroborate (`corroborate`, 17.37%)
+5. Map Relationships (`map_relationships`, 14.65%)
+6. Assess Confidence (`assess_confidence`, 17.89%)
+7. Produce Understanding (`produce_understanding`, 6.61%)
+
+Each step is scored from `0` to `5`. Normalized confidence is calculated as `Σ(step_score × step_weight) ÷ (5 × 100)`. Confidence bands are Very Low (`0.00–0.20`), Low (`0.21–0.40`), Moderate (`0.41–0.60`), High (`0.61–0.80`), and Very High (`0.81–1.00`). These shared constants and pure scoring utilities are schema-ready architecture only and are not yet wired into production scoring workflows.
+
+Required collection-agent assessment output structure: `claim_assessed`, `sources_examined`, `signals_collected`, `noise_removed`, `corroborating_evidence`, `contradictory_evidence`, `relationships_identified`, `confidence_score`, `confidence_rationale`, `collection_gaps`, `recommended_follow_on_collection`, and `assessment_summary`. No collection-agent output may represent a conclusion without a confidence rationale.
+
+Axiom-facing directive and evidence endpoints may be called with board credentials or with a configured Axiom integration bearer token. Set `TRACEGRID_AXIOM_TOKEN` (or `AXIOM_FORGE_TOKEN`) on the server and send the same value as `Authorization: Bearer <token>` or `X-TraceGrid-Axiom-Token`.
 
 Status: Implementation contract for first release (V1)
 Date: 2026-04-28

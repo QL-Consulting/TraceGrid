@@ -82,6 +82,7 @@ import { AgentIcon, AgentIconPicker } from "../components/AgentIconPicker";
 import { RunTranscriptView, type TranscriptMode } from "../components/transcript/RunTranscriptView";
 import {
   isUuidLike,
+  TRACEGRID_SOURCE_TYPE_LABELS,
   type Agent,
   type AgentSkillEntry,
   type AgentSkillSnapshot,
@@ -116,6 +117,7 @@ const runStatusIcons: Record<string, { icon: typeof CheckCircle2; color: string 
   timed_out: { icon: Timer, color: "text-orange-600 dark:text-orange-400" },
   cancelled: { icon: Slash, color: "text-neutral-500 dark:text-neutral-400" },
 };
+const traceGridSourceTypeLabels = TRACEGRID_SOURCE_TYPE_LABELS as Record<string, string>;
 
 const RUN_LOG_PAGE_BYTES = 256_000;
 
@@ -1003,16 +1005,21 @@ export function AgentDetail() {
               {roleLabels[agent.role] ?? agent.role}
               {agent.title ? ` - ${agent.title}` : ""}
             </p>
+            {agent.collectionSourceType ? (
+              <span className="mt-1 inline-flex rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                {traceGridSourceTypeLabels[agent.collectionSourceType] ?? agent.collectionSourceType.replace(/_/g, " ")}
+              </span>
+            ) : null}
           </div>
         </div>
         <AgentActionButtons
           agent={agent}
           companyId={resolvedCompanyId}
-          assignLabel="Assign Task"
-          runLabel="Run Heartbeat"
+          assignLabel="Assign Collection Job"
+          runLabel="Run Collection Agent"
           actionsDisabled={agentAction.isPending}
           workActionsDisabled={hasInvalidOrgChain}
-          workActionsDisabledReason="Repair this agent's reporting chain before assigning tasks or starting runs"
+          workActionsDisabledReason="Repair this collection agent's reporting chain before assigning jobs or starting runs"
           onActionError={setActionError}
         >
           {mobileLiveRun && (
@@ -1885,7 +1892,7 @@ function PromptsTab({
 
   const uploadMarkdownImage = useMutation({
     mutationFn: async ({ file, namespace }: { file: File; namespace: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to upload images");
+      if (!selectedCompanyId) throw new Error("Select a collection network to upload images");
       return assetsApi.uploadImage(selectedCompanyId, file, namespace);
     },
   });

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "packageName": "@paperclipai/teams-catalog",
   "packageVersion": "0.1.0",
-  "generatedAt": "2026-06-04T18:03:41.262Z",
+  "generatedAt": "2026-06-24T02:01:36.452Z",
   "teams": [
     {
       "id": "paperclipai:bundled:company-defaults:core-exec-team",
@@ -15,7 +15,7 @@
       "path": "catalog/bundled/company-defaults/core-exec-team",
       "entrypoint": "TEAM.md",
       "schema": "agentcompanies/v1",
-      "defaultInstall": true,
+      "defaultInstall": false,
       "recommendedForCompanyTypes": [
         "startup",
         "software",
@@ -96,8 +96,8 @@
         {
           "path": "TEAM.md",
           "kind": "team",
-          "sizeBytes": 2144,
-          "sha256": "4ab4f57f147e89a56a6753755d7ef142d91741b3c0159f2e53fb333cd2779eaf"
+          "sizeBytes": 2145,
+          "sha256": "a707fe466fa45fa876ca68de8dcfbbdad079fd474bb3412e88d339a35cf66289"
         },
         {
           "path": "agents/ceo/AGENTS.md",
@@ -132,7 +132,7 @@
       ],
       "trustLevel": "markdown_only",
       "compatibility": "compatible",
-      "contentHash": "sha256:0f20e9d56124c1dc90a1e4b128fabd863538bcc935117220f719d9620f7c89f1"
+      "contentHash": "sha256:b871f8dab28a98542f2f0abe68b772f3b368b18f36a080b32c62bcf4c43de7f3"
     },
     {
       "id": "paperclipai:bundled:product:product-design",
@@ -374,6 +374,102 @@
       "trustLevel": "assets",
       "compatibility": "compatible",
       "contentHash": "sha256:74ddeaeb11805835a4a67fc4530b048ab7f8aa1dc7d2b80acea139a933d158d3"
+    },
+    {
+      "id": "paperclipai:bundled:source-collection:tracegrid-core",
+      "key": "paperclipai/bundled/source-collection/tracegrid-core",
+      "kind": "bundled",
+      "category": "source-collection",
+      "slug": "tracegrid-core",
+      "name": "TraceGrid Core Collection Network",
+      "description": "Source-specialized TraceGrid collection network with one coordinator and five isolated collection agents for web, news/RSS, Reddit/forum, YouTube/transcript, and document/PDF evidence retrieval.",
+      "path": "catalog/bundled/source-collection/tracegrid-core",
+      "entrypoint": "TEAM.md",
+      "schema": "agentcompanies/v1",
+      "defaultInstall": true,
+      "recommendedForCompanyTypes": [
+        "intelligence",
+        "collection",
+        "research",
+        "evidence"
+      ],
+      "tags": [
+        "tracegrid",
+        "collection",
+        "evidence",
+        "source-specialized"
+      ],
+      "counts": {
+        "agents": 6,
+        "projects": 0,
+        "tasks": 0,
+        "routines": 0,
+        "localSkills": 0,
+        "catalogSkills": 0,
+        "externalSkillSources": 0
+      },
+      "rootAgentSlugs": [
+        "tracegrid-coordinator"
+      ],
+      "agentSlugs": [
+        "document-pdf-agent",
+        "news-rss-agent",
+        "reddit-forum-agent",
+        "tracegrid-coordinator",
+        "web-agent",
+        "youtube-transcript-agent"
+      ],
+      "projectSlugs": [],
+      "requiredSkills": [],
+      "envInputs": [],
+      "sourceRefs": [],
+      "files": [
+        {
+          "path": "TEAM.md",
+          "kind": "team",
+          "sizeBytes": 2098,
+          "sha256": "e84fb1fcaf83a87e1bc0c1d7eaa1e6816fe5ea3210d46b83902e1aed1ded7556"
+        },
+        {
+          "path": "agents/document-pdf-agent/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1283,
+          "sha256": "0e731f88d2121f3b898754ccfbd10b283753ef8b53c14062805c664d90afb209"
+        },
+        {
+          "path": "agents/news-rss-agent/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1259,
+          "sha256": "ec2bba6d4fe382d4c3128d7dde31afbd87652f9d38a72b4ae1c6df3f04678e70"
+        },
+        {
+          "path": "agents/reddit-forum-agent/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1321,
+          "sha256": "df4e0269ab52edac301ee5f488e0f8a654d307e918ba87ec0114898827f03433"
+        },
+        {
+          "path": "agents/tracegrid-coordinator/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1811,
+          "sha256": "1400ca722a6c6e806a1fa408d716f03e00a44b71413f06406654b9ae4e7d4345"
+        },
+        {
+          "path": "agents/web-agent/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1166,
+          "sha256": "e0ce40f440db137fd667e2210cb9e45dabc30645e6b7013c52f97dd4dc08b810"
+        },
+        {
+          "path": "agents/youtube-transcript-agent/AGENTS.md",
+          "kind": "agent",
+          "sizeBytes": 1361,
+          "sha256": "85303dbc8ed62d019d33cc7eca9beaa33fb17ecb9f4b291bc139553eed474900"
+        }
+      ],
+      "trustLevel": "markdown_only",
+      "compatibility": "compatible",
+      "contentHash": "sha256:8a5f1e650cf5a723df25836918fda8e9eedf5578d892dcb9f3304226a6d581b7"
     },
     {
       "id": "paperclipai:optional:content:content-machine",

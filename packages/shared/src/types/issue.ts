@@ -25,6 +25,7 @@ import type {
   IssueThreadInteractionKind,
   IssueThreadInteractionStatus,
   IssueStatus,
+  TraceGridSourceType,
 } from "../constants.js";
 import type { Goal } from "./goal.js";
 import type { Project, ProjectWorkspace } from "./project.js";
@@ -544,6 +545,7 @@ export interface Issue {
   priority: IssuePriority;
   assigneeAgentId: string | null;
   assigneeUserId: string | null;
+  collectionSourceType: TraceGridSourceType | null;
   checkoutRunId: string | null;
   executionRunId: string | null;
   executionAgentNameKey: string | null;

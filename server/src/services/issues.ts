@@ -58,6 +58,7 @@ import {
   issueCommentPresentationSchema,
   isUuidLike,
   normalizeIssueIdentifier as normalizeIssueReferenceIdentifier,
+  TRACEGRID_SOURCE_TYPES,
 } from "@paperclipai/shared";
 import { conflict, HttpError, notFound, unprocessable } from "../errors.js";
 import { logger } from "../middleware/logger.js";
@@ -94,6 +95,7 @@ import {
 import { classifyIssueGraphLiveness, type IssueLivenessFinding } from "./recovery/issue-graph-liveness.js";
 
 const ALL_ISSUE_STATUSES = ["backlog", "todo", "in_progress", "in_review", "blocked", "done", "cancelled"];
+const TRACEGRID_SOURCE_TYPE_SET = new Set<string>(TRACEGRID_SOURCE_TYPES);
 const MAX_ISSUE_COMMENT_PAGE_LIMIT = 500;
 export const ISSUE_LIST_DEFAULT_LIMIT = 500;
 export const ISSUE_LIST_MAX_LIMIT = 1000;
@@ -129,6 +131,34 @@ function applyStatusSideEffects(
     patch.cancelledAt = new Date();
   }
   return patch;
+}
+
+async function assertTraceGridCollectionSourceAssignment(input: {
+  dbOrTx: Pick<Db, "select">;
+  companyId: string;
+  collectionSourceType: string | null | undefined;
+  assigneeAgentId: string | null | undefined;
+}) {
+  if (input.collectionSourceType && !TRACEGRID_SOURCE_TYPE_SET.has(input.collectionSourceType)) {
+    throw unprocessable("Unknown collection source type");
+  }
+  if (!input.collectionSourceType || !input.assigneeAgentId) return;
+
+  const assignee = await input.dbOrTx
+    .select({
+      id: agents.id,
+      collectionSourceType: agents.collectionSourceType,
+    })
+    .from(agents)
+    .where(and(
+      eq(agents.id, input.assigneeAgentId),
+      eq(agents.companyId, input.companyId),
+    ))
+    .then((rows) => rows[0] ?? null);
+  if (!assignee) return;
+  if (assignee.collectionSourceType && assignee.collectionSourceType !== input.collectionSourceType) {
+    throw unprocessable("Collection job source type must match the assigned collection agent source type");
+  }
 }
 
 function readStringFromRecord(record: unknown, key: string) {
@@ -5028,6 +5058,12 @@ export function issueService(db: Db) {
       if (data.assigneeAgentId) {
         await assertAssignableAgent(db, companyId, data.assigneeAgentId, { kind: "work" });
       }
+      await assertTraceGridCollectionSourceAssignment({
+        dbOrTx: db,
+        companyId,
+        collectionSourceType: data.collectionSourceType,
+        assigneeAgentId: data.assigneeAgentId,
+      });
       if (data.assigneeUserId) {
         await assertAssignableUser(companyId, data.assigneeUserId);
       }
@@ -5276,6 +5312,8 @@ export function issueService(db: Db) {
         issueData.assigneeAgentId !== undefined ? issueData.assigneeAgentId : existing.assigneeAgentId;
       const nextAssigneeUserId =
         issueData.assigneeUserId !== undefined ? issueData.assigneeUserId : existing.assigneeUserId;
+      const nextCollectionSourceType =
+        issueData.collectionSourceType !== undefined ? issueData.collectionSourceType : existing.collectionSourceType;
 
       if (nextAssigneeAgentId && nextAssigneeUserId) {
         throw unprocessable("Issue can only have one assignee");
@@ -5299,6 +5337,12 @@ export function issueService(db: Db) {
       if (shouldValidateNextAssignee) {
         await assertAssignableAgent(dbOrTx as Db, existing.companyId, nextAssigneeAgentId, { kind: "work" });
       }
+      await assertTraceGridCollectionSourceAssignment({
+        dbOrTx,
+        companyId: existing.companyId,
+        collectionSourceType: nextCollectionSourceType,
+        assigneeAgentId: nextAssigneeAgentId,
+      });
       if (issueData.assigneeUserId) {
         await assertAssignableUser(existing.companyId, issueData.assigneeUserId);
       }

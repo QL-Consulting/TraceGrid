@@ -20,7 +20,7 @@ interface ArtifactGroupCardProps {
 export function ArtifactGroupCard({ group, to }: ArtifactGroupCardProps) {
   const stacked = group.count > 1;
   const preview = group.previewArtifacts[0];
-  const countLabel = `${group.count} artifact${group.count === 1 ? "" : "s"}`;
+  const countLabel = `${group.count} evidence package${group.count === 1 ? "" : "s"}`;
 
   return (
     <div className="relative">

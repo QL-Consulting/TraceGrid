@@ -7,6 +7,7 @@ export function buildNewAgentHirePayload(input: {
   effectiveRole: string;
   title?: string;
   reportsTo?: string | null;
+  collectionSourceType?: string | null;
   selectedSkillKeys?: string[];
   configValues: CreateConfigValues;
   adapterConfig: Record<string, unknown>;
@@ -17,6 +18,7 @@ export function buildNewAgentHirePayload(input: {
     effectiveRole,
     title,
     reportsTo,
+    collectionSourceType,
     selectedSkillKeys = [],
     configValues,
     adapterConfig,
@@ -28,6 +30,7 @@ export function buildNewAgentHirePayload(input: {
     role: effectiveRole,
     ...(title?.trim() ? { title: title.trim() } : {}),
     ...(reportsTo ? { reportsTo } : {}),
+    ...(collectionSourceType ? { collectionSourceType } : {}),
     ...(selectedSkillKeys.length > 0 ? { desiredSkills: selectedSkillKeys } : {}),
     adapterType: configValues.adapterType,
     defaultEnvironmentId: configValues.defaultEnvironmentId ?? null,

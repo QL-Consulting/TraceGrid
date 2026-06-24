@@ -1,4 +1,5 @@
 export type { Company } from "./company.js";
+export type { EvidencePackage } from "./evidence.js";
 export type {
   Environment,
   EnvironmentLease,

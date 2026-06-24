@@ -19,7 +19,7 @@ import { PageTabBar } from "../components/PageTabBar";
 import { Tabs } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Bot, Plus, List, GitBranch } from "lucide-react";
-import { AGENT_ROLE_LABELS, type Agent } from "@paperclipai/shared";
+import { AGENT_ROLE_LABELS, TRACEGRID_SOURCE_TYPE_LABELS, type Agent } from "@paperclipai/shared";
 import {
   resourceMembershipState,
   useResourceMembershipMutation,
@@ -29,6 +29,7 @@ import {
 import { getAdapterLabel } from "../adapters/adapter-display-registry";
 
 const roleLabels = AGENT_ROLE_LABELS as Record<string, string>;
+const sourceTypeLabels = TRACEGRID_SOURCE_TYPE_LABELS as Record<string, string>;
 
 type FilterTab = "all" | "active" | "paused" | "error";
 
@@ -56,6 +57,15 @@ function getConfiguredModel(agent: Agent): string | null {
   if (typeof value !== "string") return null;
   const model = value.trim();
   return model.length > 0 ? model : null;
+}
+
+function CollectionSourceBadge({ sourceType }: { sourceType?: string | null }) {
+  if (!sourceType) return null;
+  return (
+    <span className="inline-flex shrink-0 items-center rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+      {sourceTypeLabels[sourceType] ?? sourceType.replace(/_/g, " ")}
+    </span>
+  );
 }
 
 function filterOrgTree(nodes: OrgNode[], tab: FilterTab): OrgNode[] {
@@ -234,9 +244,12 @@ export function Agents() {
                   <AgentStatusCapsule status={agent.status} />
                 )}
                 meta={
-                  <div className="hidden xl:flex items-center gap-3">
-                    <AgentMetaColumns agent={agent} />
-                  </div>
+                  <>
+                    <CollectionSourceBadge sourceType={agent.collectionSourceType} />
+                    <div className="hidden xl:flex items-center gap-3">
+                      <AgentMetaColumns agent={agent} />
+                    </div>
+                  </>
                 }
                 trailing={
                   <div className="flex items-center gap-3">
@@ -398,6 +411,11 @@ function OrgTreeNode({
             {roleLabels[node.role] ?? node.role}
             {agent?.title ? ` - ${agent.title}` : ""}
           </span>
+          {agent?.collectionSourceType ? (
+            <span className="ml-2 align-middle">
+              <CollectionSourceBadge sourceType={agent.collectionSourceType} />
+            </span>
+          ) : null}
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <span className="sm:hidden">

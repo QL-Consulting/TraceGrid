@@ -2049,6 +2049,130 @@ registry.registerPath({
   responses: { 200: r.ok(), 401: r.unauthorized },
 });
 
+// ─── TraceGrid aliases and Evidence Packages ────────────────────────────────
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-networks",
+  tags: ["tracegrid"],
+  summary: "List TraceGrid collection networks",
+  responses: { 200: r.ok(), 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-networks/{networkId}",
+  tags: ["tracegrid"],
+  summary: "Get TraceGrid collection network",
+  request: { params: z.object({ networkId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-networks/{networkId}/collection-agents",
+  tags: ["tracegrid"],
+  summary: "List collection agents for a collection network",
+  request: { params: z.object({ networkId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-agents/{agentId}",
+  tags: ["tracegrid"],
+  summary: "Get collection agent",
+  request: { params: z.object({ agentId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-networks/{networkId}/collection-jobs",
+  tags: ["tracegrid"],
+  summary: "List collection jobs for a collection network",
+  request: { params: z.object({ networkId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-jobs/{jobId}",
+  tags: ["tracegrid"],
+  summary: "Get collection job",
+  request: { params: z.object({ jobId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-networks/{networkId}/collection-directives",
+  tags: ["tracegrid"],
+  summary: "List collection directives for a collection network",
+  request: { params: z.object({ networkId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/collection-networks/{networkId}/collection-directives",
+  tags: ["tracegrid"],
+  summary: "Create collection directive",
+  request: {
+    params: z.object({ networkId: z.string() }),
+    body: jsonBody(createGoalSchema),
+  },
+  responses: { 201: r.ok(), 400: r.badRequest, 401: r.unauthorized },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-directives/{directiveId}",
+  tags: ["tracegrid"],
+  summary: "Get collection directive",
+  request: { params: z.object({ directiveId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-directives/{directiveId}/evidence-packages",
+  tags: ["tracegrid"],
+  summary: "List evidence packages for a collection directive",
+  request: { params: z.object({ directiveId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/collection-jobs/{collectionJobId}/evidence-packages",
+  tags: ["tracegrid"],
+  summary: "List evidence packages for a collection job",
+  request: { params: z.object({ collectionJobId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/collection-jobs/{collectionJobId}/evidence-packages",
+  tags: ["tracegrid"],
+  summary: "Create evidence package for a collection job",
+  request: {
+    params: z.object({ collectionJobId: z.string() }),
+    body: jsonBody(z.record(z.string(), z.unknown())),
+  },
+  responses: { 201: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/evidence-packages/{evidencePackageId}",
+  tags: ["tracegrid"],
+  summary: "Get evidence package",
+  request: { params: z.object({ evidencePackageId: z.string() }) },
+  responses: { 200: r.ok(), 401: r.unauthorized, 404: r.notFound },
+});
+
 // ─── Secrets ─────────────────────────────────────────────────────────────────
 
 registry.registerPath({
@@ -2518,25 +2642,6 @@ registry.registerPath({
   summary: "Update experimental instance settings",
   request: { body: jsonBody(patchInstanceExperimentalSettingsSchema) },
   responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized },
-});
-
-// ─── Board chat (Conference Room Chat, experimental) ──────────────────────────
-
-registry.registerPath({
-  method: "post",
-  path: "/api/board/chat/stream",
-  tags: ["instance"],
-  summary: "Stream a board-level chat response (requires enableConferenceRoomChat)",
-  request: {
-    body: jsonBody(
-      z.object({
-        companyId: z.string(),
-        message: z.string(),
-        taskId: z.string().optional(),
-      }),
-    ),
-  },
-  responses: { 200: r.ok(), 400: r.badRequest, 401: r.unauthorized, 403: r.forbidden },
 });
 
 // ─── Access / invites / members ───────────────────────────────────────────────

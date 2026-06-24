@@ -379,7 +379,7 @@ export function OnboardingWizard() {
     const prefix = createdCompanyPrefix;
     reset();
     closeOnboarding();
-    navigate(prefix ? `/${prefix}/board-chat` : "/dashboard");
+    navigate(prefix ? `/${prefix}/dashboard` : "/dashboard");
   }
 
   function buildAdapterConfig(): Record<string, unknown> {
@@ -584,8 +584,8 @@ export function OnboardingWizard() {
         console.warn("Failed to seed CEO instructions:", err);
       }
 
-      // Advance to the Review step — the lead is now online. The user drives
-      // strategy + hiring from the planning chat after "Get started".
+      // Advance to the Review step — the lead is now online. TraceGrid sends
+      // the user to the dashboard after "Get started".
       setStep(5);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create agent");

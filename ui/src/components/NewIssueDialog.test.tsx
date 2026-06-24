@@ -659,6 +659,52 @@ describe("NewIssueDialog", () => {
     act(() => root.unmount());
   });
 
+  it("submits the assigned collection agent source type by default", async () => {
+    mockAgentsApi.list.mockResolvedValue([
+      {
+        id: "agent-1",
+        name: "Web Collector",
+        role: "researcher",
+        title: null,
+        icon: null,
+        status: "active",
+        permissions: { canCreateAgents: false },
+        adapterType: "process",
+        collectionSourceType: "web",
+      },
+    ]);
+    dialogState.newIssueDefaults = {
+      title: "Collect the web source",
+      assigneeAgentId: "agent-1",
+    };
+
+    const { root } = renderDialog(container);
+    await flush();
+
+    expect(container.textContent).toContain("Web");
+    const submitButton = Array.from(container.querySelectorAll("button"))
+      .find((button) => button.textContent?.includes("Create Collection Job"));
+    expect(submitButton).not.toBeUndefined();
+    await vi.waitFor(() => {
+      expect(submitButton?.hasAttribute("disabled")).toBe(false);
+    });
+
+    await act(async () => {
+      submitButton!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(mockIssuesApi.create).toHaveBeenCalledWith(
+      "company-1",
+      expect.objectContaining({
+        title: "Collect the web source",
+        assigneeAgentId: "agent-1",
+        collectionSourceType: "web",
+      }),
+    );
+
+    act(() => root.unmount());
+  });
+
   it("submits Chinese, Japanese, and Hindi issue text without normalization", async () => {
     const title = "验证中文任务";
     const description = [

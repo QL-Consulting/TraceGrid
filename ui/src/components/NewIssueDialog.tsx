@@ -1,6 +1,10 @@
 import { memo, useState, useEffect, useRef, useCallback, useMemo, type ChangeEvent, type CSSProperties, type DragEvent, type RefObject } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { IssueWorkMode } from "@paperclipai/shared";
+import {
+  TRACEGRID_SOURCE_TYPES,
+  TRACEGRID_SOURCE_TYPE_LABELS,
+  type IssueWorkMode,
+} from "@paperclipai/shared";
 import { pickTextColorForSolidBg } from "@/lib/color-contrast";
 import { useDialog } from "../context/DialogContext";
 import { useCompany } from "../context/CompanyContext";
@@ -89,6 +93,7 @@ interface IssueDraft {
   watchdogAgentId?: string;
   watchdogInstructions?: string;
   assigneeId?: string;
+  collectionSourceType?: string;
   projectId: string;
   projectWorkspaceId?: string;
   assigneeModelLane?: IssueModelLane;
@@ -430,6 +435,7 @@ export function NewIssueDialog() {
   const [watchdogEditorOpen, setWatchdogEditorOpen] = useState(false);
   const [participantMenuOpen, setParticipantMenuOpen] = useState(false);
   const [projectId, setProjectId] = useState("");
+  const [collectionSourceType, setCollectionSourceType] = useState("");
   const [projectWorkspaceId, setProjectWorkspaceId] = useState("");
   const [assigneeOptionsOpen, setAssigneeOptionsOpen] = useState(false);
   const [assigneeModelLane, setAssigneeModelLane] = useState<IssueModelLane>("primary");
@@ -459,6 +465,7 @@ export function NewIssueDialog() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [workModeOpen, setWorkModeOpen] = useState(false);
+  const [sourceTypeOpen, setSourceTypeOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
   const descriptionEditorRef = useRef<MarkdownEditorRef>(null);
@@ -660,6 +667,7 @@ export function NewIssueDialog() {
       approverValue,
       watchdogAgentId,
       watchdogInstructions,
+      collectionSourceType,
       projectId,
       projectWorkspaceId,
       assigneeModelLane,
@@ -680,6 +688,7 @@ export function NewIssueDialog() {
     approverValue,
     watchdogAgentId,
     watchdogInstructions,
+    collectionSourceType,
     projectId,
     projectWorkspaceId,
     assigneeModelOverride,
@@ -758,6 +767,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(defaultProjectWorkspaceId);
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setAssigneeModelLane("primary");
       setAssigneeModelOverride("");
       setAssigneeThinkingEffort("");
@@ -779,6 +789,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(newIssueDefaults.projectWorkspaceId ?? defaultProjectWorkspaceIdForProject(defaultProject));
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setReviewerValue("");
       setApproverValue("");
       setShowReviewerRow(false);
@@ -818,6 +829,7 @@ export function NewIssueDialog() {
       setWatchdogInstructions(draft.watchdogInstructions ?? "");
       setShowWatchdogRow(!!(draft.watchdogAgentId));
       setProjectId(restoredProjectId);
+      setCollectionSourceType(draft.collectionSourceType ?? "");
       setProjectWorkspaceId(
         hasExplicitProjectWorkspaceId
           ? (newIssueDefaults.projectWorkspaceId ?? "")
@@ -855,6 +867,7 @@ export function NewIssueDialog() {
       setProjectId(defaultProjectId);
       setProjectWorkspaceId(newIssueDefaults.projectWorkspaceId ?? defaultProjectWorkspaceIdForProject(defaultProject));
       setAssigneeValue(assigneeValueFromSelection(newIssueDefaults));
+      setCollectionSourceType("");
       setReviewerValue("");
       setApproverValue("");
       setShowReviewerRow(false);
@@ -922,6 +935,7 @@ export function NewIssueDialog() {
     setWatchdogAgentId("");
     setWatchdogInstructions("");
     setShowWatchdogRow(false);
+    setCollectionSourceType("");
     setProjectId("");
     setProjectWorkspaceId("");
     setAssigneeOptionsOpen(false);
@@ -953,6 +967,7 @@ export function NewIssueDialog() {
     setWatchdogAgentId("");
     setWatchdogInstructions("");
     setShowWatchdogRow(false);
+    setCollectionSourceType("");
     setProjectId("");
     setProjectWorkspaceId("");
     setAssigneeModelLane("primary");
@@ -1013,6 +1028,7 @@ export function NewIssueDialog() {
       status,
       priority: priority || "medium",
       workMode,
+      ...(effectiveCollectionSourceType ? { collectionSourceType: effectiveCollectionSourceType } : {}),
       ...(selectedAssigneeAgentId ? { assigneeAgentId: selectedAssigneeAgentId } : {}),
       ...(selectedAssigneeUserId ? { assigneeUserId: selectedAssigneeUserId } : {}),
       ...(newIssueDefaults.parentId ? { parentId: newIssueDefaults.parentId } : {}),
@@ -1113,6 +1129,7 @@ export function NewIssueDialog() {
   const currentAssignee = selectedAssigneeAgentId
     ? (agents ?? []).find((a) => a.id === selectedAssigneeAgentId)
     : null;
+  const effectiveCollectionSourceType = collectionSourceType || currentAssignee?.collectionSourceType || "";
   const currentAssigneeLowTrust = getTrustPreset(currentAssignee?.permissions) === "low_trust_review";
   const currentProject = orderedProjects.find((project) => project.id === projectId);
   const currentProjectExecutionWorkspacePolicy =
@@ -1487,6 +1504,48 @@ export function NewIssueDialog() {
                   );
                 }}
               />
+              <Popover open={sourceTypeOpen} onOpenChange={setSourceTypeOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-xs hover:bg-accent/50 transition-colors"
+                    title="Collection source type"
+                  >
+                    {effectiveCollectionSourceType
+                      ? TRACEGRID_SOURCE_TYPE_LABELS[effectiveCollectionSourceType as keyof typeof TRACEGRID_SOURCE_TYPE_LABELS]
+                      : "Any source"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-1" align="start">
+                  <button
+                    className={cn(
+                      "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                      !collectionSourceType && !currentAssignee?.collectionSourceType && "bg-accent",
+                    )}
+                    onClick={() => {
+                      setCollectionSourceType("");
+                      setSourceTypeOpen(false);
+                    }}
+                  >
+                    Any source
+                  </button>
+                  {TRACEGRID_SOURCE_TYPES.map((sourceType) => (
+                    <button
+                      key={sourceType}
+                      className={cn(
+                        "flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50",
+                        sourceType === effectiveCollectionSourceType && "bg-accent",
+                      )}
+                      onClick={() => {
+                        setCollectionSourceType(sourceType);
+                        setSourceTypeOpen(false);
+                      }}
+                    >
+                      {TRACEGRID_SOURCE_TYPE_LABELS[sourceType]}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
 
               {/* Three-dot menu to add Reviewer / Approver rows */}
               <Popover open={participantMenuOpen} onOpenChange={setParticipantMenuOpen}>

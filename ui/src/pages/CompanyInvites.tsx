@@ -14,25 +14,25 @@ const inviteRoleOptions = [
   {
     value: "viewer",
     label: "Viewer",
-    description: "Can view company work and follow along.",
-    gets: "View-only company membership.",
+    description: "Can view collection network work and follow along.",
+    gets: "View-only collection network membership.",
   },
   {
     value: "operator",
     label: "Operator",
     description: "Recommended for people who need to help run work without managing access.",
-    gets: "Can assign tasks.",
+    gets: "Can assign collection jobs.",
   },
   {
     value: "admin",
     label: "Admin",
-    description: "Recommended for operators who need to invite people, create agents, and approve joins.",
-    gets: "Can create agents, invite users, assign tasks, and approve join requests.",
+    description: "Recommended for operators who need to invite people, create collection agents, and approve joins.",
+    gets: "Can create collection agents, invite users, assign collection jobs, and approve join requests.",
   },
   {
     value: "owner",
     label: "Owner",
-    description: "Full company access, including membership management.",
+    description: "Full collection network access, including membership management.",
     gets: "Everything in Admin, plus managing members.",
   },
 ] as const;
@@ -118,7 +118,7 @@ export function CompanyInvites() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: selectedCompany?.name ?? "Company", href: "/dashboard" },
+      { label: selectedCompany?.name ?? "Collection Network", href: "/dashboard" },
       { label: "Settings", href: "/company/settings" },
       { label: "Invites" },
     ]);
@@ -188,7 +188,7 @@ export function CompanyInvites() {
   });
 
   if (!selectedCompanyId) {
-    return <div className="text-sm text-muted-foreground">Select a company to manage invites.</div>;
+    return <div className="text-sm text-muted-foreground">Select a collection network to manage invites.</div>;
   }
 
   if (invitesQuery.isLoading) {
@@ -198,7 +198,7 @@ export function CompanyInvites() {
   if (invitesQuery.error) {
     const message =
       invitesQuery.error instanceof ApiError && invitesQuery.error.status === 403
-        ? "You do not have permission to manage company invites."
+        ? "You do not have permission to manage collection network invites."
         : invitesQuery.error instanceof Error
           ? invitesQuery.error.message
           : "Failed to load invites.";
@@ -210,10 +210,10 @@ export function CompanyInvites() {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <MailPlus className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-lg font-semibold">Company Invites</h1>
+          <h1 className="text-lg font-semibold">Collection Network Invites</h1>
         </div>
         <p className="max-w-3xl text-sm text-muted-foreground">
-          Invite people to request access to this company. New invite links are copied to your clipboard when they are generated.
+          Invite people to request access to this collection network. New invite links are copied to your clipboard when they are generated.
         </p>
       </div>
 
@@ -262,7 +262,7 @@ export function CompanyInvites() {
         </fieldset>
 
         <div className="rounded-lg border border-border px-4 py-3 text-sm text-muted-foreground">
-          Each invite link is single-use. Human invitees get the selected role immediately after sign-in; agent invites still create a join request for approval.
+          Each invite link is single-use. Human invitees get the selected role immediately after sign-in; collection agent invites still create a join request for approval.
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -285,7 +285,7 @@ export function CompanyInvites() {
                 ) : null}
               </div>
               <div className="text-sm text-muted-foreground">
-                This URL includes the current Paperclip domain returned by the server.
+                This URL includes the current TraceGrid domain returned by the server.
               </div>
             </div>
             <label className="block space-y-1">
@@ -339,7 +339,7 @@ export function CompanyInvites() {
 
         {inviteHistory.length === 0 ? (
           <div className="border-t border-border px-5 py-8 text-sm text-muted-foreground">
-            No invites have been created for this company yet.
+            No invites have been created for this collection network yet.
           </div>
         ) : (
           <div className="border-t border-border">
@@ -425,7 +425,7 @@ function formatInviteState(state: "active" | "accepted" | "expired" | "revoked")
 }
 
 function formatInviteAudience(invite: Awaited<ReturnType<typeof accessApi.listInvites>>["invites"][number]) {
-  if (invite.allowedJoinTypes === "agent") return "Agent";
-  if (invite.allowedJoinTypes === "both") return invite.humanRole ? `Human or agent · ${invite.humanRole}` : "Human or agent";
+  if (invite.allowedJoinTypes === "agent") return "Collection agent";
+  if (invite.allowedJoinTypes === "both") return invite.humanRole ? `Human or collection agent · ${invite.humanRole}` : "Human or collection agent";
   return invite.humanRole ?? "Human";
 }

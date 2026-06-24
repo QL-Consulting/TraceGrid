@@ -208,7 +208,7 @@ describe("CompanyAccess", () => {
     await flushReact();
 
     expect(container.textContent).toContain("Manage the people who can work in Paperclip");
-    expect(container.textContent).toContain("Members can collaborate across the company by default");
+    expect(container.textContent).toContain("Members can collaborate across the collection network by default");
     expect(container.textContent).toContain("Core keeps this page focused on membership");
     expect(container.textContent).toContain("Humans");
     expect(container.textContent).toContain("Pending human joins");
@@ -234,7 +234,7 @@ describe("CompanyAccess", () => {
     });
     await flushReact();
 
-    expect(document.body.textContent).toContain("Update company role and membership status");
+    expect(document.body.textContent).toContain("Update collection network role and membership status");
     expect(document.body.textContent).not.toContain("Implicit grants from role");
     expect(document.body.textContent).not.toContain("permissionKey");
 

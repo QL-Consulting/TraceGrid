@@ -45,6 +45,24 @@ export {
   type TraceGridTerminology,
 } from "./tracegrid.js";
 export {
+  TRACEGRID_METHODOLOGY_STEP_IDS,
+  TRACEGRID_METHODOLOGY_STEP_LABELS,
+  TRACEGRID_METHODOLOGY_STEP_WEIGHTS,
+  TRACEGRID_METHODOLOGY_TOTAL_WEIGHT,
+  TRACEGRID_METHODOLOGY_MAX_STEP_SCORE,
+  TRACEGRID_METHODOLOGY_SCORE_VALUES,
+  TRACEGRID_CONFIDENCE_BANDS,
+  calculateTraceGridNormalizedConfidence,
+  getTraceGridConfidenceBand,
+  type TraceGridMethodologyStepId,
+  type TraceGridMethodologyScore,
+  type TraceGridMethodologyScoreMap,
+  type TraceGridConfidenceBand,
+  type TraceGridConfidenceBandId,
+  type TraceGridConfidenceCalculation,
+  type TraceGridCollectionAssessmentOutput,
+} from "./tracegrid-methodology.js";
+export {
   COMPANY_STATUSES,
   DEFAULT_COMPANY_ATTACHMENT_MAX_BYTES,
   MAX_COMPANY_ATTACHMENT_MAX_BYTES,

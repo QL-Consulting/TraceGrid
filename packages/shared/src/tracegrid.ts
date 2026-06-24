@@ -8,10 +8,17 @@ export const TRACEGRID_TERMINOLOGY = {
     purpose: "Sends collection directives and performs interpretation/synthesis outside TraceGrid.",
   },
   entities: {
+    collectionCell: {
+      label: "Collection Cell",
+      pluralLabel: "Collection Cells",
+      legacyTerms: ["Company", "Team"],
+      acceptedSynonyms: ["Intelligence Cell", "Mission Cell"],
+    },
     collectionNetwork: {
       label: "Collection Network",
       pluralLabel: "Collection Networks",
       legacyTerms: ["Company", "Team"],
+      note: "Compatibility and higher-level grouping term for distributed or multi-cell structures.",
     },
     collectionAgent: {
       label: "Collection Agent",
@@ -46,8 +53,9 @@ export const TRACEGRID_TERMINOLOGY = {
   },
   boundaries: {
     noAgentToAgentCommunication: "Collection Agents do not communicate with each other.",
-    noFinalAnalysis: "TraceGrid does not produce final analysis, conclusions, judgments, or recommendations.",
-    evidenceOnly: "TraceGrid collects, normalizes, deduplicates, retrieves, and packages evidence.",
+    noFinalAnalysis: "TraceGrid does not produce final analysis, final truth determinations, conclusions, judgments, or recommendations.",
+    evidenceOnly: "TraceGrid collects, structures, scores, normalizes, deduplicates, retrieves, and packages evidence.",
+    methodology: "TraceGrid transforms uncertainty into defensible confidence through a structured epistemological workflow.",
   },
 } as const;
 

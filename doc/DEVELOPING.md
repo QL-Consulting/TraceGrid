@@ -1,5 +1,15 @@
 # Developing
 
+## TraceGrid Methodology Development Boundary
+
+This fork is transitioning toward TraceGrid, an Evidence Intelligence Platform. TraceGrid development must preserve the ecosystem boundary:
+
+- TraceGrid owns collection workflow, evidence acquisition, evidence packaging, and weighted evidence products.
+- Axiom Forge owns fusion, validation, contextualization, gap analysis, confidence reassessment, and validated understanding.
+- StratSight owns decision-support orchestration and confidence sufficiency.
+
+Shared methodology constants and pure confidence utilities may be used for schema-ready, non-production scoring work. Do not wire methodology scoring into production collection runs, add provider SDKs, add provider API keys/environment variables, or implement live provider classes unless a later implementation phase explicitly requests it.
+
 This project can run fully in local dev without setting up PostgreSQL manually.
 
 ## Deployment Modes

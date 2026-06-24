@@ -4,15 +4,28 @@
 
 This fork is transitioning from the general Paperclip autonomous-company control plane into **TraceGrid**.
 
-TraceGrid's sole product function is source-specialized collection and retrieval:
+TraceGrid is the **Evidence Intelligence Platform** in the broader governing intelligence ecosystem. Its product function is source-specialized collection, retrieval, and evidence-confidence packaging:
 
 1. Axiom Forge sends collection directives.
 2. TraceGrid Coordinator decomposes directives into source-specific collection jobs.
 3. Isolated Collection Agents retrieve evidence from only their assigned source type.
-4. TraceGrid normalizes, deduplicates, and packages evidence.
-5. Evidence Packages return to Axiom Forge.
+4. TraceGrid normalizes, deduplicates, and packages evidence into Evidence Packages / Weighted Evidence Products.
+5. Axiom Forge receives weighted evidence products for fusion, validation, contextualization, gap analysis, confidence reassessment, and validated understanding.
+6. StratSight governs decision-support sufficiency and mission context.
 
-TraceGrid is not Strat Sight and not Axiom Forge. It does not produce human-facing reports, final analysis, conclusions, recommendations, or judgments. The inherited Paperclip terms remain in some internal storage and compatibility routes during the refactor, but product-facing terminology should move toward Collection Networks, Collection Agents, Collection Jobs, Collection Directives, and Evidence Packages.
+TraceGrid is not StratSight and not Axiom Forge. It does not produce human-facing reports, final analysis, final truth determinations, conclusions, recommendations, or judgments. The inherited Paperclip terms remain in some internal storage and compatibility routes during the refactor, but product-facing terminology should move toward Collection Cells, Collection Agents, Collection Jobs, Collection Directives, Evidence Sources, Evidence Packages, and Weighted Evidence Products.
+
+Every collection agent follows the TraceGrid MVP Epistemological Methodology:
+
+1. Observe Environment
+2. Collect Signals
+3. Filter Noise
+4. Corroborate
+5. Map Relationships
+6. Assess Confidence
+7. Produce Understanding
+
+The methodology remains constant. Only the information environment changes.
 
 ## What It Is
 

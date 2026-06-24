@@ -27,6 +27,14 @@
 
 # Paperclip is the app people use to manage AI agents for work.
 
+## TraceGrid fork direction
+
+This fork is being refactored into **TraceGrid**, an Evidence Intelligence Platform for source-specialized collection, retrieval, and evidence-confidence packaging.
+
+TraceGrid transforms uncertainty into defensible confidence through a structured methodology: Observe Environment → Collect Signals → Filter Noise → Corroborate → Map Relationships → Assess Confidence → Produce Understanding. TraceGrid produces Evidence Packages / Weighted Evidence Products; it does not determine final truth. Axiom Forge performs analytical fusion and validated understanding, while StratSight governs decision-support sufficiency and mission context.
+
+The default TraceGrid tenant term is **Collection Cell**. Legacy Paperclip names remain in internal compatibility routes and schema during the non-breaking refactor.
+
 Open-source orchestration for teams of AI agents.
 
 **If OpenClaw is an _employee_, Paperclip is the _company_.**

@@ -10,6 +10,7 @@ export { issueTreeControlRoutes } from "./issue-tree-control.js";
 export { fileResourceRoutes, createFileResourceLimiter } from "./file-resources.js";
 export { routineRoutes } from "./routines.js";
 export { goalRoutes } from "./goals.js";
+export { traceGridAliasRoutes } from "./tracegrid-aliases.js";
 export { approvalRoutes } from "./approvals.js";
 export { secretRoutes } from "./secrets.js";
 export { costRoutes } from "./costs.js";

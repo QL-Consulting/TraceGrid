@@ -214,7 +214,7 @@ export function CompanyEnvironments() {
   });
   const createSecret = useMutation({
     mutationFn: (input: { name: string; value: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to create secrets");
+      if (!selectedCompanyId) throw new Error("Select a collection network to create secrets");
       return secretsApi.create(selectedCompanyId, input);
     },
     onSuccess: async () => {
@@ -477,7 +477,7 @@ export function CompanyEnvironments() {
   );
 
   if (!selectedCompanyId) {
-    return <div className="text-sm text-muted-foreground">Select a company context to manage environment secrets and bindings.</div>;
+    return <div className="text-sm text-muted-foreground">Select a collection network context to manage environment secrets and bindings.</div>;
   }
 
   if (!environmentsEnabled) {

@@ -195,6 +195,7 @@ type AgentAuthorizationRow = {
   role: string;
   status: string;
   reportsTo: string | null;
+  collectionSourceType: string | null;
   permissions: Record<string, unknown> | null | undefined;
 };
 type ProjectAuthorizationRow = {
@@ -520,6 +521,7 @@ export function authorizationService(db: Db) {
         role: agents.role,
         status: agents.status,
         reportsTo: agents.reportsTo,
+        collectionSourceType: agents.collectionSourceType,
         permissions: agents.permissions,
       })
       .from(agents)
@@ -955,6 +957,69 @@ export function authorizationService(db: Db) {
     });
   }
 
+  function isTraceGridCollectionAgent(agent: AgentAuthorizationRow) {
+    return typeof agent.collectionSourceType === "string" && agent.collectionSourceType.length > 0;
+  }
+
+  function collectionAgentDeny(action: AuthorizationAction, explanation: string): AuthorizationDecision {
+    return deny({
+      action,
+      reason: "deny_policy_restricted",
+      explanation,
+    });
+  }
+
+  function collectionAgentAllow(action: AuthorizationAction, explanation: string): AuthorizationDecision {
+    return allow({
+      action,
+      reason: "allow_self",
+      explanation,
+    });
+  }
+
+  function decideTraceGridCollectionAgentAccess(input: {
+    actorAgent: AgentAuthorizationRow;
+    action: AuthorizationAction;
+    resource: AuthorizationResource;
+  }): AuthorizationDecision | null {
+    if (!isTraceGridCollectionAgent(input.actorAgent)) return null;
+
+    if (input.action === "agent:read" || input.action === "agent:wake") {
+      if (input.resource.type === "agent" && input.resource.agentId === input.actorAgent.id) {
+        return collectionAgentAllow(input.action, "Allowed because the collection agent is accessing itself.");
+      }
+      return collectionAgentDeny(input.action, "Collection agents cannot access or wake other collection agents.");
+    }
+
+    if (
+      input.action === "company_scope:read" ||
+      input.action === "project:read" ||
+      input.action === "runtime:manage" ||
+      input.action === "secrets:read"
+    ) {
+      return collectionAgentDeny(
+        input.action,
+        `Collection agents are isolated to their assigned collection jobs and cannot use ${input.action}.`,
+      );
+    }
+
+    if (input.action === "tasks:assign") {
+      return collectionAgentDeny(input.action, "Collection agents cannot assign collection jobs to themselves or peers.");
+    }
+
+    if (input.action === "issue:read" || input.action === "issue:comment" || input.action === "issue:mutate") {
+      if (input.resource.type !== "issue") {
+        return collectionAgentDeny(input.action, "Collection agent issue access requires a collection job resource.");
+      }
+      if (input.resource.assigneeAgentId === input.actorAgent.id) {
+        return collectionAgentAllow(input.action, "Allowed because the collection job is assigned to this collection agent.");
+      }
+      return collectionAgentDeny(input.action, "Collection agents can only access their assigned collection jobs.");
+    }
+
+    return null;
+  }
+
   async function decide(input: {
     actor: AuthorizationActor;
     action: AuthorizationAction;
@@ -1181,6 +1246,15 @@ export function authorizationService(db: Db) {
         reason: "deny_company_boundary",
         explanation: "Actor agent was not found in the target company.",
       });
+    }
+
+    const traceGridCollectionAgentDecision = decideTraceGridCollectionAgentAccess({
+      actorAgent,
+      action: input.action,
+      resource: input.resource,
+    });
+    if (traceGridCollectionAgentDecision) {
+      return traceGridCollectionAgentDecision;
     }
 
     const lowTrustDecision = await decideLowTrustAccess({

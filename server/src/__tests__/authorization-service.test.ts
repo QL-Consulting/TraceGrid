@@ -35,7 +35,12 @@ async function createCompany(db: ReturnType<typeof createDb>, label: string) {
 async function createAgent(
   db: ReturnType<typeof createDb>,
   companyId: string,
-  input: { role?: string; reportsTo?: string | null; permissions?: Record<string, unknown> } = {},
+  input: {
+    role?: string;
+    reportsTo?: string | null;
+    permissions?: Record<string, unknown>;
+    collectionSourceType?: string | null;
+  } = {},
 ) {
   return db
     .insert(agents)
@@ -44,6 +49,7 @@ async function createAgent(
       name: `Agent ${randomUUID()}`,
       role: input.role ?? "engineer",
       reportsTo: input.reportsTo ?? null,
+      collectionSourceType: input.collectionSourceType ?? null,
       permissions: input.permissions ?? {},
       adapterType: "process",
       adapterConfig: {},
@@ -248,6 +254,107 @@ describeEmbeddedPostgres("authorization service", () => {
       reason: "allow_simple_company_member",
     });
     expect(decision.explanation).toContain("simple mode");
+  });
+
+  it("limits TraceGrid collection agents to their assigned collection jobs", async () => {
+    const company = await createCompany(db, "TraceGridAssignedJob");
+    const collectionAgent = await createAgent(db, company.id, {
+      role: "researcher",
+      collectionSourceType: "web",
+    });
+    const peerAgent = await createAgent(db, company.id, {
+      role: "researcher",
+      collectionSourceType: "news_rss",
+    });
+    const assignedIssue = await createIssue(db, company.id, {
+      assigneeAgentId: collectionAgent.id,
+    });
+    const peerIssue = await createIssue(db, company.id, {
+      assigneeAgentId: peerAgent.id,
+    });
+
+    const ownDecision = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "issue:read",
+      resource: {
+        type: "issue",
+        companyId: company.id,
+        issueId: assignedIssue.id,
+        assigneeAgentId: collectionAgent.id,
+      },
+    });
+    const peerDecision = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "issue:read",
+      resource: {
+        type: "issue",
+        companyId: company.id,
+        issueId: peerIssue.id,
+        assigneeAgentId: peerAgent.id,
+      },
+    });
+
+    expect(ownDecision).toMatchObject({
+      allowed: true,
+      reason: "allow_self",
+    });
+    expect(peerDecision).toMatchObject({
+      allowed: false,
+      reason: "deny_policy_restricted",
+    });
+    expect(peerDecision.explanation).toContain("assigned collection jobs");
+  });
+
+  it("blocks TraceGrid collection-agent peer visibility, wakeups, and assignment", async () => {
+    const company = await createCompany(db, "TraceGridPeerIsolation");
+    const collectionAgent = await createAgent(db, company.id, {
+      collectionSourceType: "web",
+    });
+    const peerAgent = await createAgent(db, company.id, {
+      collectionSourceType: "document_pdf",
+    });
+
+    const readPeer = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "agent:read",
+      resource: { type: "agent", companyId: company.id, agentId: peerAgent.id },
+    });
+    const wakePeer = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "agent:wake",
+      resource: { type: "agent", companyId: company.id, agentId: peerAgent.id },
+    });
+    const assignPeer = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "tasks:assign",
+      resource: { type: "issue", companyId: company.id, assigneeAgentId: peerAgent.id },
+      scope: { assigneeAgentId: peerAgent.id },
+    });
+
+    expect(readPeer.allowed).toBe(false);
+    expect(wakePeer.allowed).toBe(false);
+    expect(assignPeer.allowed).toBe(false);
+    expect(readPeer.explanation).toContain("cannot access or wake other collection agents");
+    expect(assignPeer.explanation).toContain("cannot assign collection jobs");
+  });
+
+  it("denies company-wide scope reads for TraceGrid collection agents", async () => {
+    const company = await createCompany(db, "TraceGridCompanyScope");
+    const collectionAgent = await createAgent(db, company.id, {
+      collectionSourceType: "reddit_forum",
+    });
+
+    const decision = await authorizationService(db).decide({
+      actor: { type: "agent", agentId: collectionAgent.id, companyId: company.id, source: "agent_key" },
+      action: "company_scope:read",
+      resource: { type: "company", companyId: company.id },
+    });
+
+    expect(decision).toMatchObject({
+      allowed: false,
+      reason: "deny_policy_restricted",
+    });
+    expect(decision.explanation).toContain("isolated to their assigned collection jobs");
   });
 
   it("limits low-trust issue reads to the configured project and root issue boundary", async () => {

@@ -3,9 +3,11 @@ import express from "express";
 import request from "supertest";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
+  activityLog,
   agents,
   companies,
   createDb,
+  evidencePackages,
   goals,
   issues,
 } from "@paperclipai/db";
@@ -35,6 +37,8 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
   }, 20_000);
 
   afterEach(async () => {
+    await db.delete(evidencePackages);
+    await db.delete(activityLog);
     await db.delete(issues);
     await db.delete(goals);
     await db.delete(agents);
@@ -105,6 +109,14 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
     const collectionAgents = await request(app).get(`/api/collection-networks/${companyId}/collection-agents`);
     const collectionJobs = await request(app).get(`/api/collection-networks/${companyId}/collection-jobs`);
     const directives = await request(app).get(`/api/collection-networks/${companyId}/collection-directives`);
+    const createdDirective = await request(app)
+      .post(`/api/collection-networks/${companyId}/collection-directives`)
+      .send({
+        title: "Axiom directive",
+        description: "Collect source evidence for Axiom Forge.",
+        level: "company",
+        status: "active",
+      });
 
     expect(networks.status).toBe(200);
     expect(networks.body[0]).toMatchObject({ id: companyId, name: "TraceGrid Network" });
@@ -122,5 +134,80 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
     });
     expect(directives.status).toBe(200);
     expect(directives.body[0]).toMatchObject({ id: goalId });
+    expect(createdDirective.status).toBe(201);
+    expect(createdDirective.body).toMatchObject({
+      companyId,
+      title: "Axiom directive",
+    });
+  });
+
+  it("retrieves evidence packages by collection directive", async () => {
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const issueId = randomUUID();
+    const goalId = randomUUID();
+    const evidenceId = randomUUID();
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "TraceGrid Evidence Network",
+      issuePrefix: `TE${companyId.replace(/-/g, "").slice(0, 5).toUpperCase()}`,
+    });
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "Document Agent",
+      role: "researcher",
+      adapterType: "process",
+      adapterConfig: {},
+      collectionSourceType: "document_pdf",
+    });
+    await db.insert(goals).values({
+      id: goalId,
+      companyId,
+      title: "Collect documents",
+      level: "company",
+      status: "active",
+    });
+    await db.insert(issues).values({
+      id: issueId,
+      companyId,
+      title: "Collect PDF evidence",
+      status: "todo",
+      assigneeAgentId: agentId,
+      goalId,
+      collectionSourceType: "document_pdf",
+    });
+    await db.insert(evidencePackages).values({
+      id: evidenceId,
+      companyId,
+      collectionJobId: issueId,
+      collectionAgentId: agentId,
+      sourceType: "document_pdf",
+      sourceName: "Example PDF",
+      url: "https://example.com/doc.pdf",
+      title: "Example PDF",
+      author: null,
+      retrievedAt: new Date("2026-06-24T12:00:00.000Z"),
+      rawText: "Raw PDF text",
+      mediaUrls: [],
+      metadata: {},
+      collectionAgent: "Document Agent",
+      confidence: 0.8,
+      limitations: ["Test fixture"],
+      contentHash: "hash",
+      dedupeKey: "dedupe",
+    });
+
+    const response = await request(createApp())
+      .get(`/api/collection-directives/${goalId}/evidence-packages`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0]).toMatchObject({
+      id: evidenceId,
+      collection_job_id: issueId,
+      source_type: "document_pdf",
+    });
   });
 });

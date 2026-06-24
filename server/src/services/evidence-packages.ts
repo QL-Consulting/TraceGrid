@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, isNull } from "drizzle-orm";
 import type { Db } from "@paperclipai/db";
 import { agents, evidencePackages, issues } from "@paperclipai/db";
 import type { EvidencePackage } from "@paperclipai/shared";
@@ -126,6 +126,20 @@ export function evidencePackageService(db: Db) {
         .where(and(
           eq(evidencePackages.companyId, companyId),
           eq(evidencePackages.collectionJobId, collectionJobId),
+        ))
+        .orderBy(desc(evidencePackages.createdAt));
+      return rows.map(toReadModel);
+    },
+
+    listForCollectionDirective: async (companyId: string, collectionDirectiveId: string) => {
+      const rows = await db
+        .select(getTableColumns(evidencePackages))
+        .from(evidencePackages)
+        .innerJoin(issues, eq(evidencePackages.collectionJobId, issues.id))
+        .where(and(
+          eq(evidencePackages.companyId, companyId),
+          eq(issues.companyId, companyId),
+          eq(issues.goalId, collectionDirectiveId),
         ))
         .orderBy(desc(evidencePackages.createdAt));
       return rows.map(toReadModel);

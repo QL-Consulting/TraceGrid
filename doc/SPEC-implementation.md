@@ -24,6 +24,8 @@ TraceGrid terminology:
 
 Every Evidence Package uses the shared Evidence Schema with `source_type`, `source_name`, `url`, `title`, `author`, `published_at`, `retrieved_at`, `raw_text`, `media_urls`, `metadata`, `collection_agent`, `collection_job_id`, `confidence`, and `limitations`.
 
+Axiom-facing directive and evidence endpoints may be called with board credentials or with a configured Axiom integration bearer token. Set `TRACEGRID_AXIOM_TOKEN` (or `AXIOM_FORGE_TOKEN`) on the server and send the same value as `Authorization: Bearer <token>` or `X-TraceGrid-Axiom-Token`.
+
 Status: Implementation contract for first release (V1)
 Date: 2026-04-28
 Audience: Product, engineering, and agent-integration authors

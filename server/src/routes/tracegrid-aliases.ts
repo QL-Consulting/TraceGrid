@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { timingSafeEqual } from "node:crypto";
+import type { Request } from "express";
 import type { Db } from "@paperclipai/db";
 import { createGoalSchema } from "@paperclipai/shared";
 import {
@@ -13,6 +15,43 @@ import { validate } from "../middleware/validate.js";
 import { assertBoard, assertCompanyAccess } from "./authz.js";
 import { getActorInfo } from "./authz.js";
 import { notFound } from "../errors.js";
+
+function constantTimeEqual(left: string, right: string) {
+  const leftBytes = Buffer.from(left);
+  const rightBytes = Buffer.from(right);
+  return leftBytes.length === rightBytes.length && timingSafeEqual(leftBytes, rightBytes);
+}
+
+function bearerToken(req: Request) {
+  const authorization = req.header("authorization")?.trim();
+  const match = authorization?.match(/^bearer\s+(.+)$/i);
+  return match?.[1]?.trim() || null;
+}
+
+function isAxiomForgeRequest(req: Request) {
+  const expected = process.env.TRACEGRID_AXIOM_TOKEN?.trim() || process.env.AXIOM_FORGE_TOKEN?.trim();
+  if (!expected) return false;
+  const token = req.header("x-tracegrid-axiom-token")?.trim() || bearerToken(req);
+  return Boolean(token && constantTimeEqual(token, expected));
+}
+
+function assertTraceGridReadAccess(req: Request, companyId: string) {
+  if (isAxiomForgeRequest(req)) return;
+  assertCompanyAccess(req, companyId);
+  assertBoard(req);
+}
+
+function traceGridActor(req: Request) {
+  if (isAxiomForgeRequest(req) && req.actor.type === "none") {
+    return {
+      actorType: "system" as const,
+      actorId: "axiom-forge",
+      agentId: null,
+      runId: null,
+    };
+  }
+  return getActorInfo(req);
+}
 
 export function traceGridAliasRoutes(db: Db) {
   const router = Router();
@@ -74,8 +113,7 @@ export function traceGridAliasRoutes(db: Db) {
 
   router.get("/collection-networks/:networkId/collection-directives", async (req, res) => {
     const networkId = req.params.networkId as string;
-    assertCompanyAccess(req, networkId);
-    assertBoard(req);
+    assertTraceGridReadAccess(req, networkId);
     res.json(await goals.list(networkId));
   });
 
@@ -84,10 +122,9 @@ export function traceGridAliasRoutes(db: Db) {
     validate(createGoalSchema),
     async (req, res) => {
       const networkId = req.params.networkId as string;
-      assertCompanyAccess(req, networkId);
-      assertBoard(req);
+      assertTraceGridReadAccess(req, networkId);
       const directive = await goals.create(networkId, req.body);
-      const actor = getActorInfo(req);
+      const actor = traceGridActor(req);
       await logActivity(db, {
         companyId: networkId,
         actorType: actor.actorType,
@@ -112,10 +149,9 @@ export function traceGridAliasRoutes(db: Db) {
   });
 
   router.get("/collection-directives/:directiveId/evidence-packages", async (req, res) => {
-    assertBoard(req);
     const directive = await goals.getById(req.params.directiveId as string);
     if (!directive) throw notFound("Collection directive not found");
-    assertCompanyAccess(req, directive.companyId);
+    assertTraceGridReadAccess(req, directive.companyId);
     res.json(await evidencePackages.listForCollectionDirective(directive.companyId, directive.id));
   });
 

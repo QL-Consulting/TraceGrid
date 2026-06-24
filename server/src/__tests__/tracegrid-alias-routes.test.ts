@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import express from "express";
+import type { Request } from "express";
 import request from "supertest";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
@@ -30,6 +31,7 @@ if (!embeddedPostgresSupport.supported) {
 describeEmbeddedPostgres("TraceGrid alias routes", () => {
   let db!: ReturnType<typeof createDb>;
   let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
+  const originalTraceGridAxiomToken = process.env.TRACEGRID_AXIOM_TOKEN;
 
   beforeAll(async () => {
     tempDb = await startEmbeddedPostgresTestDatabase("tracegrid-alias-routes-");
@@ -37,6 +39,11 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
   }, 20_000);
 
   afterEach(async () => {
+    if (originalTraceGridAxiomToken === undefined) {
+      delete process.env.TRACEGRID_AXIOM_TOKEN;
+    } else {
+      process.env.TRACEGRID_AXIOM_TOKEN = originalTraceGridAxiomToken;
+    }
     await db.delete(evidencePackages);
     await db.delete(activityLog);
     await db.delete(issues);
@@ -49,16 +56,16 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
     await tempDb?.cleanup();
   });
 
-  function createApp() {
+  function createApp(actor: Request["actor"] = {
+    type: "board",
+    source: "local_implicit",
+    userId: "local-board",
+    isInstanceAdmin: true,
+  }) {
     const app = express();
     app.use(express.json());
     app.use((req, _res, next) => {
-      req.actor = {
-        type: "board",
-        source: "local_implicit",
-        userId: "local-board",
-        isInstanceAdmin: true,
-      };
+      req.actor = actor;
       next();
     });
     app.use("/api", traceGridAliasRoutes(db));
@@ -209,5 +216,105 @@ describeEmbeddedPostgres("TraceGrid alias routes", () => {
       collection_job_id: issueId,
       source_type: "document_pdf",
     });
+  });
+
+  it("allows Axiom Forge token access to create directives and retrieve directive evidence", async () => {
+    process.env.TRACEGRID_AXIOM_TOKEN = "axiom-secret";
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const issueId = randomUUID();
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Axiom Linked Network",
+      issuePrefix: `AX${companyId.replace(/-/g, "").slice(0, 5).toUpperCase()}`,
+    });
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "Web Agent",
+      role: "researcher",
+      adapterType: "process",
+      adapterConfig: {},
+      collectionSourceType: "web",
+    });
+
+    const app = createApp({ type: "none", source: "none" });
+    const createdDirective = await request(app)
+      .post(`/api/collection-networks/${companyId}/collection-directives`)
+      .set("x-tracegrid-axiom-token", "axiom-secret")
+      .send({
+        title: "Axiom collection directive",
+        description: "Collect evidence requested by Axiom Forge.",
+        level: "company",
+        status: "active",
+      });
+
+    expect(createdDirective.status).toBe(201);
+    expect(createdDirective.body).toMatchObject({
+      companyId,
+      title: "Axiom collection directive",
+    });
+
+    await db.insert(issues).values({
+      id: issueId,
+      companyId,
+      title: "Collect web evidence",
+      status: "todo",
+      assigneeAgentId: agentId,
+      goalId: createdDirective.body.id,
+      collectionSourceType: "web",
+    });
+    await db.insert(evidencePackages).values({
+      companyId,
+      collectionJobId: issueId,
+      collectionAgentId: agentId,
+      sourceType: "web",
+      sourceName: "Example Site",
+      url: "https://example.com",
+      title: "Example Site",
+      retrievedAt: new Date("2026-06-24T12:00:00.000Z"),
+      rawText: "Raw web evidence",
+      mediaUrls: [],
+      metadata: {},
+      collectionAgent: "Web Agent",
+      confidence: 0.75,
+      limitations: ["Test fixture"],
+      contentHash: "hash-axiom",
+      dedupeKey: "dedupe-axiom",
+    });
+
+    const evidence = await request(app)
+      .get(`/api/collection-directives/${createdDirective.body.id}/evidence-packages`)
+      .set("authorization", "Bearer axiom-secret");
+
+    expect(evidence.status).toBe(200);
+    expect(evidence.body).toHaveLength(1);
+    expect(evidence.body[0]).toMatchObject({
+      source_type: "web",
+      collection_job_id: issueId,
+    });
+  });
+
+  it("rejects Axiom-facing directive access without the configured token", async () => {
+    process.env.TRACEGRID_AXIOM_TOKEN = "axiom-secret";
+    const companyId = randomUUID();
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Axiom Protected Network",
+      issuePrefix: `AP${companyId.replace(/-/g, "").slice(0, 5).toUpperCase()}`,
+    });
+
+    const app = createApp({ type: "none", source: "none" });
+    const response = await request(app)
+      .post(`/api/collection-networks/${companyId}/collection-directives`)
+      .set("x-tracegrid-axiom-token", "wrong-token")
+      .send({
+        title: "Unauthorized directive",
+        level: "company",
+        status: "planned",
+      });
+
+    expect(response.status).toBe(401);
   });
 });

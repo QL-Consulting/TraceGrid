@@ -4,6 +4,7 @@ import type {
   PauseReason,
   AgentRole,
   AgentStatus,
+  TraceGridSourceType,
 } from "../constants.js";
 import type {
   CompanyMembership,
@@ -88,6 +89,7 @@ export interface Agent {
   status: AgentStatus;
   reportsTo: string | null;
   capabilities: string | null;
+  collectionSourceType: TraceGridSourceType | null;
   adapterType: AgentAdapterType;
   adapterConfig: Record<string, unknown>;
   runtimeConfig: AgentRuntimeConfig;

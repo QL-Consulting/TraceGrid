@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MAX_COMPANY_ATTACHMENT_MAX_BYTES } from "../constants.js";
+import { MAX_COMPANY_ATTACHMENT_MAX_BYTES, TRACEGRID_SOURCE_TYPES } from "../constants.js";
 import {
   issueCommentAuthorTypeSchema,
   issueCommentMetadataSchema,
@@ -65,6 +65,7 @@ export const portabilityAgentManifestEntrySchema = z.object({
   title: z.string().nullable(),
   icon: z.string().nullable(),
   capabilities: z.string().nullable(),
+  collectionSourceType: z.enum(TRACEGRID_SOURCE_TYPES).nullable().optional().default(null),
   reportsToSlug: z.string().min(1).nullable(),
   adapterType: z.string().min(1),
   adapterConfig: z.record(z.string(), z.unknown()),

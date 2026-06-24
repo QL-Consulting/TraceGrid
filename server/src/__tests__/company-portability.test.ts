@@ -175,6 +175,7 @@ describe("company portability", () => {
         icon: "code",
         reportsTo: null,
         capabilities: "Writes code",
+        collectionSourceType: "web",
         adapterType: "claude_local",
         adapterConfig: {
           promptTemplate: "You are ClaudeCoder.",
@@ -222,6 +223,7 @@ describe("company portability", () => {
         icon: "globe",
         reportsTo: null,
         capabilities: "Owns marketing",
+        collectionSourceType: null,
         adapterType: "claude_local",
         adapterConfig: {
           promptTemplate: "You are CMO.",
@@ -463,6 +465,7 @@ describe("company portability", () => {
 
     const extension = asTextFile(exported.files[".paperclip.yaml"]);
     expect(extension).toContain('schema: "paperclip/v1"');
+    expect(extension).toContain('collectionSourceType: "web"');
     expect(extension).not.toContain("promptTemplate");
     expect(extension).not.toContain("instructionsFilePath");
     expect(extension).not.toContain("command:");
@@ -1480,6 +1483,7 @@ describe("company portability", () => {
             "name: Coder",
             "slug: coder",
             "kind: agent",
+            "collectionSourceType: document_pdf",
             "---",
             "",
             "# Coder",
@@ -1540,6 +1544,7 @@ describe("company portability", () => {
       { strictMode: false },
     );
     expect(agentSvc.create).toHaveBeenCalledWith("company-1", expect.objectContaining({
+      collectionSourceType: "document_pdf",
       adapterConfig: expect.objectContaining({
         env: {
           OPENAI_API_KEY: {

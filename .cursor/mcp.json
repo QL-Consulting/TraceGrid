@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nocodebackend": {
+      "command": "npx",
+      "args": ["-y", "@nocodebackend/mcp"],
+      "env": {
+        "NCB_TOKEN": "${env:NCB_TOKEN}"
+      }
+    }
+  }
+}

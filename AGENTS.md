@@ -219,3 +219,13 @@ PR #2218 (`feat/external-adapter-phase1`) adds external adapter support. See roo
 - `createServerAdapter()` must include ALL optional fields (especially `detectModel`)
 - Built-in UI adapters can shadow external plugin parsers — remove built-in when fully externalizing
 - Reference external adapters: Hermes (`@henkey/hermes-paperclip-adapter` or `file:`) and Droid (npm)
+
+## Cursor Cloud specific instructions
+
+Dependencies are refreshed automatically on VM startup (`pnpm install`); you do not need to run it yourself unless manifests changed.
+
+- One process, one port: `pnpm dev` boots the Express API, the Vite board UI (dev middleware, same origin), and an embedded PostgreSQL cluster together on `http://localhost:3100`. Leave `DATABASE_URL` unset — no external DB/Docker is needed for dev. Health: `curl http://localhost:3100/api/health` (expect `{"status":"ok",...}`); `curl http://localhost:3100/api/companies` returns a JSON array.
+- `pnpm dev` runs in watch mode and is idempotent per repo+instance: a second `pnpm dev` will report the existing runner instead of starting a duplicate. Manage it with `pnpm dev:list` / `pnpm dev:stop`. Use `pnpm dev:once` for a non-watch run.
+- Instance state (embedded Postgres data, logs, storage, secrets key) lives under `~/.paperclip/instances/default/`, not in the repo. Reset dev data with `rm -rf ~/.paperclip/instances/default/db` then `pnpm dev`.
+- `pnpm test` runs the full Vitest suite and is heavy (~7 min). Known environment-dependent failures in the cloud VM that are NOT caused by app code: `cursor-local-execute.test.ts` and `cursor-local-adapter-environment.test.ts` need a `cursor-agent` binary on PATH (fail with exit 127 / `pass`→`fail` when absent), and several `workspace-runtime.test.ts` git-worktree cases hit the 5s test timeout. Local agent execution adapters (Claude/Codex/Cursor CLIs) are likewise not installed by default; the control plane boots fine without them and only errors at agent run time.
+- Ignore the `pnpm install` warnings about missing `packages/plugins/sdk/dist/dev-cli.js` bin links and the storybook/zod peer-dependency warnings — the SDK is built on first `pnpm dev`/`pnpm test` via the `preflight:workspace-links` + plugin-sdk build steps, and these warnings do not block dev, typecheck, or tests.
